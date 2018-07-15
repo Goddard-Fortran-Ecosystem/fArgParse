@@ -33,7 +33,7 @@ contains
       type (StringUnlimitedMap) :: options
 
       p = ArgParser()
-      call p%add_argument('--arg', action='store_true')
+      call p%add_argument('--arg', action='store')
       options = p%parse_args(arguments)
 
       @assertEqual(0, options%size())
@@ -249,5 +249,31 @@ contains
 
 
    end subroutine test_combo_long_option_string
+
+   @test
+   subroutine test_position_option()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('n', type='integer')
+      call arguments%push_back('4')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+      
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(4, n)
+      
+   end subroutine test_position_option
 
 end module Test_ArgParser_mod

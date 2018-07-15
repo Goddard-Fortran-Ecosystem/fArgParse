@@ -18,6 +18,7 @@ module fp_BaseAction_mod
       class(*), allocatable :: default
       character(:), allocatable :: help
       integer :: n_arguments
+      logical :: positional = .false.
    contains
       procedure :: initialize
       procedure :: get_destination
@@ -27,6 +28,7 @@ module fp_BaseAction_mod
       procedure :: get_default
       procedure :: get_help
       procedure :: has_default
+      procedure :: is_positional
       procedure :: print_help
 
       procedure :: matches
@@ -85,7 +87,11 @@ contains
                if (.not. allocated(this%destination)) then
                   this%destination = opt_string(2:2)
                end if
-               ! Either way - keep trying for a long opt string
+            else ! is positinal argument
+               this%destination = opt_string(:)
+               this%positional = .true.
+!!$               if (present(dest)) then error
+               exit
             end if
             call iter%next()
          end do
@@ -265,5 +271,12 @@ contains
       end select
 
    end function has_default
+
+   logical function is_positional(this)
+      class (BaseAction), intent(in) :: this
+
+      is_positional = this%positional
+
+   end function is_positional
 
 end module fp_BaseAction_mod

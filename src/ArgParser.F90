@@ -111,7 +111,12 @@ contains
       class (ArgParser), intent(inout) :: this
       class (BaseAction), intent(in) :: action
 
-      call this%optionals%push_back(action)
+      if (action%is_positional()) then
+         call this%positionals%push_back(action)
+      else
+         call this%optionals%push_back(action)
+      end if
+
    end subroutine add_argument_as_action
 
 
@@ -149,7 +154,7 @@ contains
       if (present(action)) then
          action_ = action
       else
-         action_ = 'none'
+         action_ = 'store'
       end if
 
       arg_ = this%registry%at(action_)
@@ -184,22 +189,27 @@ contains
       character(:), pointer :: argument
 
       type (Arg), pointer :: opt
+      class (BaseAction), pointer :: act
       integer :: arg_value_int
       real :: arg_value_real
       character(:), target, allocatable :: embedded_value
 
+      integer :: ith
+      
       _UNUSED_DUMMY(unused)
       
       ! TODO:  Hopefully this is a temporary workaround for ifort 19 beta
       call this%get_defaults2(option_values)
 !!$      option_values = this%get_defaults()
+
+      ith = 0
       
       iter = arguments%begin()
       do while (iter /= arguments%end())
          argument => iter%get()
 
          opt => this%get_option_matching(argument, embedded_value)
-         if (associated(opt)) then
+         if (associated(opt)) then ! argument corresponds to an optional argument
             select case (opt%get_action())
             case ('store')
 
@@ -233,9 +243,23 @@ contains
             case default
                call option_values%insert(opt%get_destination(), NONE)
             end select
-         else
+         else ! is positional
+            ith = ith + 1
+            print*,'ith: ', ith, this%positionals%size()
+            act => this%positionals%at(ith)
+            select case (act%get_type())
+            case ('string')
+               call option_values%insert(act%get_destination(), argument)
+            case ('integer')
+               read(argument,*) arg_value_int
+               call option_values%insert(act%get_destination(), arg_value_int)
+            case ('real')
+               read(argument,*) arg_value_real
+               call option_values%insert(act%get_destination(), arg_value_real)
+            end select
             if (present(unprocessed)) call unprocessed%push_back(argument)
          end if
+         
 
          call iter%next()
       end do
