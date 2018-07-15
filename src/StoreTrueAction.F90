@@ -48,7 +48,7 @@ contains
       else
          default_ = .false.
       end if
-         
+
       call this%StoreConstAction%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
            & type=type, dest=dest, default=default_, const=.true., help=help)
    end subroutine initialize

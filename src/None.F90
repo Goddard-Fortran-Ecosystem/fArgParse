@@ -2,7 +2,8 @@ module fp_None_mod
    implicit none
    private
 
-   public :: NONE
+   public :: none
+   public :: t_None
 
    type :: t_None ! private type
    end type t_None

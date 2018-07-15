@@ -27,3 +27,7 @@ if (PFUNIT)
 
   add_subdirectory (tests)
 endif ()
+
+if (examples)
+  add_subdirectory(Examples)
+endif()

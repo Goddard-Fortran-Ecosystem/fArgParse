@@ -26,6 +26,7 @@ module fp_BaseAction_mod
       procedure :: get_const
       procedure :: get_default
       procedure :: get_help
+      procedure :: has_default
       procedure :: print_help
 
       procedure :: matches
@@ -251,5 +252,18 @@ contains
       ERROR stop 'Not Implemented Error - BaseAction::act()'
 
    end subroutine act
+
+
+   logical function has_default(this)
+      class (BaseAction), intent(in) :: this
+
+      select type (q => this%default)
+      type is (t_None)
+         has_default = .false.
+      class default
+         has_default = .true.
+      end select
+
+   end function has_default
 
 end module fp_BaseAction_mod
