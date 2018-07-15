@@ -1,5 +1,6 @@
 module Test_Arg_mod
-   use FUnit
+   use pFUnit_mod
+   use fp_Arg_mod
    implicit none
 
    @suite(name='Arg_suite')

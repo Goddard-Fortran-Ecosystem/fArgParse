@@ -1,8 +1,15 @@
 module Test_ArgParser_mod
-   use FUnit
+   use pFUnit_mod
+   use fp_ArgParser_mod
+   use fp_StringVector_mod
+   use fp_StringUnlimitedMap_mod
+   use fp_Cast_mod
+   use fp_ErrorCodes_mod
    implicit none
 
    @suite(name='ArgParser_suite')
+
+
 
 contains
 

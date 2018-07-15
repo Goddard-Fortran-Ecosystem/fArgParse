@@ -1,6 +1,6 @@
 module Test_BaseAction_mod
    use fp_BaseAction_mod
-   use FUnit
+   use pFUnit_mod
    implicit none
 
    @suite(name='BaseAction_suite')

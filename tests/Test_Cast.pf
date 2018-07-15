@@ -1,5 +1,7 @@
 module Test_Cast_mod
-   use FUnit
+   use pFUnit_mod
+   use fp_Cast_mod
+   use fp_ErrorCodes_mod
    implicit none
 
    @suite(name='Cast_suite')

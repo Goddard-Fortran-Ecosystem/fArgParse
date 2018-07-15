@@ -154,7 +154,7 @@ contains
       else
          action_ = 'none'
       end if
-      print*,__FILE__,__LINE__, action_
+
       arg_ = this%registry%at(action_)
       call arg_%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
            & type=type, dest=dest, default=default, const=const, help=help)
@@ -236,11 +236,12 @@ contains
             case default
                call option_values%insert(opt%get_destination(), NONE)
             end select
+         else
+            call unprocessed%push_back(argument)
          end if
 
          call iter%next()
       end do
-
 
    end function parse_args_args
 
