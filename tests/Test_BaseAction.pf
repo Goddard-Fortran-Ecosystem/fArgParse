@@ -1,0 +1,62 @@
+module Test_BaseAction_mod
+   use fp_BaseAction_mod
+   use FUnit
+   implicit none
+
+   @suite(name='BaseAction_suite')
+
+contains
+
+   @test
+   subroutine test_is_legal()
+      type(BaseAction) :: opt
+
+      @assertFalse(opt%is_legal_option_string(''))
+      @assertFalse(opt%is_legal_option_string('-'))
+      @assertFalse(opt%is_legal_option_string('*'))
+      @assertFalse(opt%is_legal_option_string('a'))
+      @assertFalse(opt%is_legal_option_string('--'))
+      @assertFalse(opt%is_legal_option_string('-*'))
+      @assertFalse(opt%is_legal_option_string('-a-'))
+      @assertFalse(opt%is_legal_option_string('-1'))
+
+      @assertTrue(opt%is_legal_option_string('-a'))
+      @assertTrue(opt%is_legal_option_string('-a'))
+      @assertTrue(opt%is_legal_option_string('--a'))
+      @assertTrue(opt%is_legal_option_string('--a-'))
+      @assertTrue(opt%is_legal_option_string('--a1'))
+      @assertTrue(opt%is_legal_option_string('--a_1'))
+      
+   end subroutine test_is_legal
+
+
+   @test
+   subroutine test_get_destination()
+      type (BaseAction) :: opt
+
+      
+      call opt%initialize('-f') ! only name available
+      @assertEqual('f', opt%get_destination())
+
+      call opt%initialize('--g') ! only name available
+      @assertEqual('g', opt%get_destination())
+
+      call opt%initialize('-f','-g') ! first short name if no long name
+      @assertEqual('f', opt%get_destination())
+
+      call opt%initialize('-f','--g') ! long name takes precedence over short
+      @assertEqual('g', opt%get_destination())
+
+      call opt%initialize('--g','-f') ! long name takes precedence over short (regardless of order)
+      @assertEqual('g', opt%get_destination())
+
+      call opt%initialize('-f','--g', '--h') ! first long name takes precedent
+      @assertEqual('g', opt%get_destination())
+
+      call opt%initialize('--g','-f', '-h') ! random order test
+      @assertEqual('g', opt%get_destination())
+      
+   end subroutine test_get_destination
+
+
+end module Test_BaseAction_mod

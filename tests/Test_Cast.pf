@@ -1,0 +1,145 @@
+module Test_Cast_mod
+   use FUnit
+   implicit none
+
+   @suite(name='Cast_suite')
+
+contains
+
+
+   @test
+   subroutine test_cast_to_logical()
+      class(*), allocatable :: unlimited
+      logical :: flag
+      
+      unlimited = .true.
+      call cast(unlimited, flag)
+      @assertTrue(flag)
+
+      unlimited = .false.
+      call cast(unlimited, flag)
+      @assertFalse(flag)
+
+   end subroutine test_cast_to_logical
+   
+   @test
+   subroutine test_cast_to_logical_fail()
+      class(*), allocatable :: unlimited
+      logical :: flag
+
+      integer :: status
+      
+      unlimited = 1
+      call cast(unlimited, flag, rc=status)
+      @assertEqual(INCOMPATIBLE_DYNAMIC_TYPE, status)
+
+      unlimited = .false.
+      call cast(unlimited, flag, rc=status)
+      @assertEqual(SUCCESS, status)
+      
+   end subroutine test_cast_to_logical_fail
+   
+
+   @test
+   subroutine test_cast_to_integer()
+      class(*), allocatable :: unlimited
+      integer :: i
+      
+      unlimited = 1
+      call cast(unlimited, i)
+      @assertEqual(1, i)
+
+      unlimited = 2
+      call cast(unlimited, i)
+      @assertEqual(2, i)
+
+   end subroutine test_cast_to_integer
+   
+   @test
+   subroutine test_cast_to_integer_fail()
+      class(*), allocatable :: unlimited
+      integer :: i
+
+      integer :: status
+      
+      unlimited = 1. ! real is not an integer
+      call cast(unlimited, i, rc=status)
+      @assertEqual(INCOMPATIBLE_DYNAMIC_TYPE, status)
+
+
+      unlimited = 1
+      call cast(unlimited, i, rc=status)
+      @assertEqual(SUCCESS, status)
+
+      
+   end subroutine test_cast_to_integer_fail
+   
+   @test
+   subroutine test_cast_to_string()
+      class(*), allocatable :: unlimited
+      character(len=:), allocatable :: string
+      
+      unlimited = 'cat'
+      call cast(unlimited, string)
+      @assertEqual('cat', string)
+
+      unlimited = 'dog'
+      call cast(unlimited, string)
+      @assertEqual('dog', string)
+
+   end subroutine test_cast_to_string
+   
+   @test
+   subroutine test_cast_to_string_fail()
+      class(*), allocatable :: unlimited
+      character(len=:), allocatable :: string
+
+      integer :: status
+      
+      unlimited = 1. ! real is not an string
+      call cast(unlimited, string, rc=status)
+      @assertEqual(INCOMPATIBLE_DYNAMIC_TYPE, status)
+
+      unlimited = 'cow'
+      call cast(unlimited, string, rc=status)
+      @assertEqual(SUCCESS, status)
+
+      
+   end subroutine test_cast_to_string_fail
+
+
+   @test
+   subroutine test_cast_to_real()
+      class(*), allocatable :: unlimited
+      real :: x
+      
+      unlimited = 1.
+      call cast(unlimited, x)
+      @assertEqual(1., x)
+
+      unlimited = 2.
+      call cast(unlimited, x)
+      @assertEqual(2., x)
+
+   end subroutine test_cast_to_real
+   
+   @test
+   subroutine test_cast_to_real_fail()
+      class(*), allocatable :: unlimited
+      real :: x
+
+      integer :: status
+      
+      unlimited = 1 ! integer is not an real
+      call cast(unlimited, x, rc=status)
+      @assertEqual(INCOMPATIBLE_DYNAMIC_TYPE, status)
+
+      unlimited = 3.1459
+      call cast(unlimited, x, rc=status)
+      @assertEqual(SUCCESS, status)
+
+      
+   end subroutine test_cast_to_real_fail
+
+
+end module Test_Cast_mod

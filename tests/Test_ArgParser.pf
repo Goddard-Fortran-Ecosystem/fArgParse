@@ -1,0 +1,246 @@
+module Test_ArgParser_mod
+   use FUnit
+   implicit none
+
+   @suite(name='ArgParser_suite')
+
+contains
+
+   @test
+   subroutine test_null()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      p = ArgParser()
+      options = p%parse_args(arguments)
+
+      @assertEqual(0, options%size())
+      
+   end subroutine test_null
+
+   @test
+   subroutine test_one_option_missing_argument()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      p = ArgParser()
+      call p%add_argument('--arg', action='store_true')
+      options = p%parse_args(arguments)
+
+      @assertEqual(0, options%size())
+      
+   end subroutine test_one_option_missing_argument
+
+   @test
+   subroutine test_one_option_with_argument()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      call arguments%push_back('--arg')
+      p = ArgParser()
+      call p%add_argument('--arg', action='store_true')
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      
+   end subroutine test_one_option_with_argument
+
+   @test
+   subroutine test_option_type_logical()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      logical :: flag
+
+      call arguments%push_back('--f1')
+      call arguments%push_back('--f2')
+
+      ! present
+      p = ArgParser()
+      call p%add_argument('--f1', action='store_true')
+      call p%add_argument('--f2', action='store_false')
+
+      options = p%parse_args(arguments)
+      call cast(options%at('f1'), flag=flag)
+      @assertTrue(flag)
+
+      call cast(options%at('f2'), flag=flag)
+      @assertFalse(flag)
+
+
+   end subroutine test_option_type_logical
+
+   @test
+   subroutine test_option_type_integer()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      integer :: i
+
+      call arguments%push_back('-n')
+      call arguments%push_back('1')
+      
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', action='store')
+      options = p%parse_args(arguments)
+
+      @assertEqual(1, options%size())
+      call cast(options%at('n'), i)
+      @assertEqual(1, i)
+
+
+   end subroutine test_option_type_integer
+
+   @test
+   subroutine test_option_type_integer_default()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments, absent
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: n
+      integer :: status
+      
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', action='store', default=5)
+      options = p%parse_args(absent)
+
+      @assertEqual(1, options%size())
+
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(5, n)
+
+      call arguments%push_back('-n')
+      call arguments%push_back('3')
+      options = p%parse_args(arguments)
+      
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(3, n)
+
+
+   end subroutine test_option_type_integer_default
+
+
+   @test
+   subroutine test_option_type_string()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      character(:), allocatable :: string
+      integer :: status
+
+      call arguments%push_back('-f')
+      call arguments%push_back('foo')
+      p = ArgParser()
+      call p%add_argument('-f', type='string', action='store')
+      options = p%parse_args(arguments)
+
+      @assertEqual(1, options%size())
+      opt_value => options%at('f')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('f'), string, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual('foo', string)
+
+   end subroutine test_option_type_string
+
+
+   @test
+   subroutine test_option_type_real()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      real :: x
+      integer :: status
+      
+      call arguments%push_back('-x')
+      call arguments%push_back('1.234')
+      p = ArgParser()
+      call p%add_argument('-x', type='real', action='store')
+      options = p%parse_args(arguments)
+
+      @assertEqual(1, options%size())
+      opt_value => options%at('x')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('x'), x, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(1.234, x)
+
+   end subroutine test_option_type_real
+
+   ! Need to support cases where the option value is in the same argument as the
+   ! option specifier.   e.g.  "-n3" should be the equivalent of "-n 3".
+   @test
+   subroutine test_combo_short_option_string()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer')
+      call arguments%push_back('-n3')
+      options = p%parse_args(arguments)
+
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(3, n)
+
+   end subroutine test_combo_short_option_string
+
+   ! Long options require an "=" for embedded values:
+   ! "--foo=3" is equivalent to "--foo 3"
+   @test
+   subroutine test_combo_long_option_string()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: foo
+      integer :: status
+     
+      p = ArgParser()
+      call p%add_argument('--foo', type='integer')
+      call arguments%push_back('--foo=3')
+      options = p%parse_args(arguments)
+
+      @assertEqual(1, options%size())
+      opt_value => options%at('foo')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('foo'), foo, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(3, foo)
+
+
+   end subroutine test_combo_long_option_string
+
+end module Test_ArgParser_mod
