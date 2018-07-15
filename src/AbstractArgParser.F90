@@ -45,7 +45,7 @@ module fp_AbstractArgParser_mod
          import AbstractArgParser
          class (AbstractAction), intent(inout) :: this
          type (StringUnlimitedMap), intent(inout) :: namespace
-         class (AbstractArgParser), intent(inout) :: parser
+         class (AbstractArgParser), intent(in) :: parser
          class(*), intent(in) :: value
          character(*), optional, intent(in) :: option_string
       end subroutine act

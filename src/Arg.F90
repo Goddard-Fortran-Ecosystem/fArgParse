@@ -15,6 +15,7 @@ module fp_Arg_mod
       type (StringVector) :: option_strings
       character(:), allocatable :: action
       character(:), allocatable :: type
+      integer :: n_arguments
       class(*), allocatable :: default
       character(:), allocatable :: help
    contains
@@ -42,7 +43,7 @@ contains
         ! Keyword enforcer
         & unused, &
         ! Keyword arguments
-        & action, type, dest, default, const, help) result(an_option)
+        & action, type, n_arguments, dest, default, const, help) result(an_option)
       type (Arg), target :: an_option
 
       character(len=*), intent(in) :: opt_string_1
@@ -53,6 +54,7 @@ contains
 
       character(len=*), optional, intent(in) :: action
       character(len=*), optional, intent(in) :: type
+      integer, optional, intent(in) :: n_arguments
       character(len=*), optional, intent(in) :: dest
       character(len=*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default
@@ -100,6 +102,12 @@ contains
          an_option%type = type
       else
          an_option%type = 'string' ! default
+      end if
+
+      if (present(n_arguments)) then
+         an_option%n_arguments = n_arguments
+      else
+         an_option%n_arguments = 0
       end if
 
       if (present(help)) then

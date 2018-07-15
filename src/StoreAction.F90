@@ -17,7 +17,7 @@ contains
       use fp_StringUnlimitedMap_mod
       class (StoreAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
-      class (AbstractArgParser), intent(inout) :: parser
+      class (AbstractArgParser), intent(in) :: parser
       class(*), intent(in) :: value
       character(*), optional, intent(in) :: option_string
 

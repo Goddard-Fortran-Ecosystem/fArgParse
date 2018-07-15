@@ -87,6 +87,7 @@ contains
       type (StringUnlimitedMap) :: options
 
       integer :: i
+      integer :: status
 
       call arguments%push_back('-n')
       call arguments%push_back('1')
@@ -97,7 +98,8 @@ contains
       options = p%parse_args(arguments)
 
       @assertEqual(1, options%size())
-      call cast(options%at('n'), i)
+      call cast(options%at('n'), i, rc=status)
+      @assertEqual(SUCCESS, status)
       @assertEqual(1, i)
 
 

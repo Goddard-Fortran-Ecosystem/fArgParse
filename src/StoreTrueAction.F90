@@ -23,7 +23,7 @@ contains
         ! Keyword enforcer
         & unused, &
         ! Keyword arguments
-        & type, dest, default, const, help)
+        & type, n_arguments, dest, default, const, help)
       class (StoreTrueAction), intent(out) :: this
 
       character(len=*), intent(in) :: opt_string_1
@@ -33,6 +33,7 @@ contains
       class (KeywordEnforcer), optional, intent(in) :: unused
 
       character(len=*), optional, intent(in) :: type
+      integer, optional, intent(in) :: n_arguments
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default

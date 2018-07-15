@@ -21,8 +21,8 @@ program main
    call p%add_argument('-i', '--input', type='string', help='name of input file')
 
    ! Positional arguments not yet implemented.
-!!$   ! Option 4: positional argument - an integer stored as 'n'
-!!$   call p%add_argument('n', type='integer', action='store', help='a number')
+   ! Option 4: positional argument - an integer stored as 'n'
+   call p%add_argument('n', type='integer', action='store', help='a number')
 
 
    ! Process command lines and fill in a dictionary of values:
@@ -39,5 +39,12 @@ program main
          print*,'input: ',input_file
       end if
    end if
-      
+
+   if (options%count('n')> 0) then
+      call cast(options%at('n'), n)
+      if (debug) then
+         print*,'n: ',n
+      end if
+   end if
+   
 end program main

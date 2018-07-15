@@ -25,6 +25,7 @@ module fp_BaseAction_mod
       procedure :: get_type
       procedure :: get_option_strings
       procedure :: get_const
+      procedure :: get_n_arguments
       procedure :: get_default
       procedure :: get_help
       procedure :: has_default
@@ -47,7 +48,7 @@ contains
         ! Keyword enforcer
         & unused, &
         ! Keyword arguments
-        & type, dest, default, const, help)
+        & type, n_arguments, dest, default, const, help)
       class (BaseAction), intent(out) :: this
 
       character(len=*), intent(in) :: opt_string_1
@@ -57,6 +58,7 @@ contains
       class (KeywordEnforcer), optional, intent(in) :: unused
 
       character(len=*), optional, intent(in) :: type
+      integer, optional, intent(in) :: n_arguments
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default
@@ -101,6 +103,12 @@ contains
          this%type = type
       else
          this%type = 'string' ! default
+      end if
+
+      if (present(n_arguments)) then
+         this%n_arguments = n_arguments
+      else
+         this%n_arguments = 1 ! default
       end if
 
       if (present(help)) then
@@ -251,7 +259,7 @@ contains
       use fp_stringUnlimitedMap_mod
       class (BaseAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
-      class (AbstractArgParser), intent(inout) :: parser
+      class (AbstractArgParser), intent(in) :: parser
       class(*), intent(in) :: value
       character(*), optional, intent(in) :: option_string
 
@@ -278,5 +286,12 @@ contains
       is_positional = this%positional
 
    end function is_positional
+
+   integer function get_n_arguments(this) result(n)
+      class(BaseAction), intent(in) :: this
+
+      n = this%n_arguments
+
+   end function get_n_arguments
 
 end module fp_BaseAction_mod

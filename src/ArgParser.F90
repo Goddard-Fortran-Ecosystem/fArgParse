@@ -16,6 +16,7 @@ module fp_ArgParser_mod
    use fp_ArgVector_mod
    use fp_StringVector_mod
    use fp_BaseAction_mod
+   use fp_StoreAction_mod
    use fp_ActionVector_mod
    use fp_StringActionMap_mod
    use fp_StringUnlimitedMap_mod
@@ -124,7 +125,7 @@ contains
    subroutine add_argument_as_attributes(this, &
         & opt_string_1, opt_string_2, opt_string_3, opt_string_4, &  ! Positional arguments
         & unused, &                                    ! Keyword enforcer
-        & action, type, dest, default, const, help) ! Keyword arguments
+        & action, type, n_arguments, dest, default, const, help) ! Keyword arguments
 
       class (ArgParser), intent(inout) :: this
       character(*), intent(in) :: opt_string_1
@@ -135,6 +136,7 @@ contains
 
       character(*), optional, intent(in) :: action
       character(*), optional, intent(in) :: type
+      integer, optional, intent(in) :: n_arguments
       character(*), optional, intent(in) :: dest
       character(*), optional, intent(in) :: const
       character(*), optional, intent(in) :: help
@@ -148,7 +150,7 @@ contains
 
       ! old
       opt = opt%make_option(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & action=action, type=type, dest=dest, default=default, const=const, help=help)
+           & action=action, type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
       call this%add_argument(opt)
 
       if (present(action)) then
@@ -159,7 +161,7 @@ contains
 
       arg_ = this%registry%at(action_)
       call arg_%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & type=type, dest=dest, default=default, const=const, help=help)
+           & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
       call this%add_argument(arg_)
       
    end subroutine add_argument_as_attributes
@@ -188,64 +190,57 @@ contains
       type (StringVectorIterator) :: iter
       character(:), pointer :: argument
 
-      type (Arg), pointer :: opt
+      class(BaseAction), pointer :: opt
       class (BaseAction), pointer :: act
       integer :: arg_value_int
       real :: arg_value_real
       character(:), target, allocatable :: embedded_value
+      class(*), allocatable :: args  ! scalar for now, but should be a list
 
       integer :: ith
-      
+      integer :: n_arguments
+
       _UNUSED_DUMMY(unused)
       
       ! TODO:  Hopefully this is a temporary workaround for ifort 19 beta
       call this%get_defaults2(option_values)
-!!$      option_values = this%get_defaults()
 
       ith = 0
       
       iter = arguments%begin()
       do while (iter /= arguments%end())
          argument => iter%get()
-
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
-            select case (opt%get_action())
-            case ('store')
 
+            n_arguments = opt%get_n_arguments()
+            ! Must be 1 or zero for now
+            select case(n_arguments)
+            case (0)
+               call opt%act(option_values, this, value=argument)
+            case (1)
                if (embedded_value /= '') then
                   argument => embedded_value
                else
-                  ! Get next argument as value
                   call iter%next()
                   argument => iter%get()
                end if
-
                select case (opt%get_type())
                case ('string')
-                  call option_values%insert(opt%get_destination(), argument)
+                  args = argument
                case ('integer')
                   read(argument,*) arg_value_int
-                  call option_values%insert(opt%get_destination(), arg_value_int)
+                  args = arg_value_int
                case ('real')
                   read(argument,*) arg_value_real
-                  call option_values%insert(opt%get_destination(), arg_value_real)
+                  args = arg_value_real
                end select
                deallocate(embedded_value)
-
-            case ('store_true')
-               call option_values%insert(opt%get_destination(), .true.)
-            case ('store_false')
-               call option_values%insert(opt%get_destination(), .false.)
-            case ('help')
-               call this%print_help()
-               stop
-            case default
-               call option_values%insert(opt%get_destination(), NONE)
+               call opt%act(option_values, this, value=args)
+               deallocate(args)
             end select
          else ! is positional
             ith = ith + 1
-            print*,'ith: ', ith, this%positionals%size()
             act => this%positionals%at(ith)
             select case (act%get_type())
             case ('string')
@@ -288,47 +283,37 @@ contains
       type (StringUnlimitedMap) :: option_values
       class (ArgParser), intent(in) :: this
 
-      type (Arg), pointer :: opt
-      type (ArgVectorIterator) :: opt_iter
-      class (BaseAction), pointer :: act
-      type (ActionVectorIterator) :: action_iter
+      class (BaseAction), pointer :: opt
+      type (ActionVectorIterator) :: option_iter
 
-      opt_iter = this%options%begin()
-      do while (opt_iter /= this%options%end())
-         opt => opt_iter%get()
+      option_iter = this%optionals%begin()
+      do while (option_iter /= this%optionals%end())
+         opt => option_iter%get()
          if (opt%has_default()) then
             call option_values%insert(opt%get_destination(), opt%get_default())
          end if
-         call opt_iter%next()
-      end do
-
-      action_iter = this%optionals%begin()
-      do while (action_iter /= this%optionals%end())
-         act => action_iter%get()
-         if (act%has_default()) then
-            call option_values%insert(act%get_destination(), act%get_default())
-         end if
-         call action_iter%next()
+         call option_iter%next()
       end do
       
    end subroutine get_defaults2
 
    function get_option_matching(this, argument, embedded_value) result(opt)
-      type (Arg), pointer :: opt
+      class (BaseAction), pointer :: opt
       class (ArgParser), target, intent(in) :: this
       character(*), intent(in) :: argument
       character(:), allocatable, intent(out) :: embedded_value
 
-      type (ArgVectorIterator) :: iter_opt
       type (StringVectorIterator) :: iter_opt_string
+
+      type (ActionVectorIterator) :: iter_opt
 
       character(:), pointer :: opt_string
       type (StringVector), pointer :: opt_strings
 
       integer :: n
 
-      iter_opt = this%options%begin()
-      do while (iter_opt /= this%options%end())
+      iter_opt = this%optionals%begin()
+      do while (iter_opt /= this%optionals%end())
          opt => iter_opt%get()
          opt_strings => opt%get_option_strings()
          iter_opt_string = opt_strings%begin()
@@ -373,15 +358,33 @@ contains
 
       type (ArgVectorIterator) :: opt_iter
       type (Arg), pointer :: opt
+      type (ActionVectorIterator) :: act_iter
+      type (BaseAction), pointer :: act
 
       call this%print_help_header()
-      
-      opt_iter = this%options%begin()
-      do while (opt_iter /= this%options%end())
-         opt => opt_iter%get()
-         call opt%print_help()
-         call opt_iter%next()
-      end do
+
+      if (this%positionals%size() > 0) then
+         print*,' '
+         print*,'positional arguments:'
+         act_iter = this%positionals%begin()
+         do while (act_iter /= this%positionals%end())
+            act => act_iter%get()
+            call act%print_help()
+            call act_iter%next()
+         end do
+      end if
+
+      if (this%optionals%size() > 0) then
+         print*,' '
+         print*,'optional arguments:'
+         
+         act_iter = this%optionals%begin()
+         do while (act_iter /= this%optionals%end())
+            act => act_iter%get()
+            call act%print_help()
+            call act_iter%next()
+         end do
+      end if
 
       call this%print_help_tail()
       
@@ -395,28 +398,39 @@ contains
 
       type (StringVector), pointer :: opt_strings
       type (ArgVectorIterator) :: opt_iter
+      type (ActionVectorIterator) :: act_iter
+      class (BaseAction), pointer :: act
       type (Arg), pointer :: opt
       
-      header = 'usage:  PROG'
+      header = 'usage:  PROG '
 
-      opt_iter = this%options%begin()
-      do while (opt_iter /= this%options%end())
-         opt => opt_iter%get()
+      act_iter = this%optionals%begin()
+      do while (act_iter /= this%optionals%end())
+         act => act_iter%get()
 
-         opt_strings => opt%get_option_strings()
+         opt_strings => act%get_option_strings()
          opt_string => opt_strings%front()
          header = header // '[' // opt_string
 
-         if (opt%get_action() == 'store') then
-            header = header // ' ' // upper_case(opt%get_destination())
+         if (act%get_n_arguments() > 0) then
+            header = header // ' ' // upper_case(act%get_destination())
          end if
          header = header // ']'
-         call opt_iter%next()
+         call act_iter%next()
       end do
 
+      if (this%positionals%size() > 0) then
+         act_iter = this%positionals%begin()
+         do while (act_iter /= this%positionals%end())
+            act => act_iter%get()
+            opt_strings => act%get_option_strings()
+            opt_string => opt_strings%front()
+            header = header // ' ' // opt_string
+            call act_iter%next()
+         end do
+      end if
+
       print*,header
-      print*,' '
-      print*,'optional arguments:'
 
    contains
 
