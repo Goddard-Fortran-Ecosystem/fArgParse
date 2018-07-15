@@ -146,9 +146,6 @@ contains
            & action=action, type=type, dest=dest, default=default, const=const, help=help)
       call this%add_argument(opt)
 
-      ! new
-      !
-      
       if (present(action)) then
          action_ = action
       else
@@ -237,7 +234,7 @@ contains
                call option_values%insert(opt%get_destination(), NONE)
             end select
          else
-            call unprocessed%push_back(argument)
+            if (present(unprocessed)) call unprocessed%push_back(argument)
          end if
 
          call iter%next()
@@ -269,6 +266,8 @@ contains
 
       type (Arg), pointer :: opt
       type (ArgVectorIterator) :: opt_iter
+      class (BaseAction), pointer :: act
+      type (ActionVectorIterator) :: action_iter
 
       opt_iter = this%options%begin()
       do while (opt_iter /= this%options%end())
@@ -277,6 +276,15 @@ contains
             call option_values%insert(opt%get_destination(), opt%get_default())
          end if
          call opt_iter%next()
+      end do
+
+      action_iter = this%optionals%begin()
+      do while (action_iter /= this%optionals%end())
+         act => action_iter%get()
+         if (act%has_default()) then
+            call option_values%insert(act%get_destination(), act%get_default())
+         end if
+         call action_iter%next()
       end do
       
    end subroutine get_defaults2
