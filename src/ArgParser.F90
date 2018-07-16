@@ -72,6 +72,9 @@ contains
          parser%program_name = get_command_line_argument(0)
       end if
 
+      ! Help is added by default.
+      call parser%add_argument('-h', '--help', action='help', help='This message.')
+
    end function new_argParser_empty
 
    subroutine initialize_registry(this)

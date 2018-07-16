@@ -11,17 +11,13 @@ program main
 
    p = ArgParser()
 
-   ! Option 1: automagically list the options to this program.
-   call p%add_argument('-h', '--help', action='help', help = 'this message')
-
-   ! Option 2: allow for verbose/debug; Note: default is .false.
+   ! Option 1: allow for verbose/debug; Note: default is .false.
    call p%add_argument('-d', '--debug', action='store_true',help='make output more verbose')
 
-   ! Option 3: optional argument to specify a file name for input
+   ! Option 2: optional argument to specify a file name for input
    call p%add_argument('-i', '--input', type='string', help='name of input file')
 
-   ! Positional arguments not yet implemented.
-   ! Option 4: positional argument - an integer stored as 'n'
+   ! Option 3: positional argument - an integer stored as 'n'
    call p%add_argument('n', type='integer', action='store', help='a number')
 
 
