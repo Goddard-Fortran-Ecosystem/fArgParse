@@ -1,7 +1,25 @@
 module fp_CommandLineArguments_mod
    use fp_StringVector_mod
+   implicit none
 
+   private
+
+   public :: get_command_line_arguments
+   public :: get_command_line_argument
+   
 contains
+
+   function get_command_line_argument(i) result(argument)
+      character(:), allocatable :: argument
+      integer, intent(in) :: i
+
+      integer :: length_of_argument
+      call get_command_argument(i, length=length_of_argument)
+      allocate(character(length_of_argument) :: argument)
+      call get_command_argument(i, value=argument)
+
+   end function get_command_line_argument
+
 
    function get_command_line_arguments() result(arguments)
       type (StringVector) :: arguments
@@ -11,21 +29,10 @@ contains
       
       n_arguments = command_argument_count()
       do i = 1, n_arguments
-         call arguments%push_back(get_argument(i))
+         call arguments%push_back(get_command_line_argument(i))
       end do
 
    end function get_command_line_arguments
 
-
-   function get_argument(i) result(argument)
-      character(:), allocatable :: argument
-      integer, intent(in) :: i
-
-      integer :: length_of_argument
-      call get_command_argument(i, length=length_of_argument)
-      allocate(character(length_of_argument) :: argument)
-      call get_command_argument(i, value=argument)
-
-   end function get_argument
 
 end module fp_CommandLineArguments_mod

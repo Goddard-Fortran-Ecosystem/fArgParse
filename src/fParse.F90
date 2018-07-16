@@ -9,6 +9,6 @@ module fParse
    public :: cast
    public :: StringUnlimitedMap
    public :: get_command_line_arguments
-   public :: get_argument
+   public :: get_command_line_argument
 
 end module fParse

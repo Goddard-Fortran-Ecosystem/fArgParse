@@ -33,6 +33,7 @@ module fp_ArgParser_mod
       type (ArgVector) :: options
       type (StringActionMap) :: registry
       logical :: is_initialized = .false.
+      character(:), allocatable :: program_name
    contains
       generic :: add_argument => add_argument_as_option
       generic :: add_argument => add_argument_as_action
@@ -64,10 +65,18 @@ module fp_ArgParser_mod
 contains
 
 
-   function new_argParser_empty() result(parser)
+   function new_argParser_empty(program_name) result(parser)
+      use fp_CommandLineArguments_mod
       type (ArgParser) :: parser
+      character(*), optional, intent(in) :: program_name
 
       call parser%initialize_registry()
+
+      if (present(program_name)) then
+         parser%program_name = program_name
+      else
+         parser%program_name = get_command_line_argument(0)
+      end if
 
    end function new_argParser_empty
 
@@ -401,8 +410,8 @@ contains
       type (ActionVectorIterator) :: act_iter
       class (BaseAction), pointer :: act
       type (Arg), pointer :: opt
-      
-      header = 'usage:  PROG '
+
+      header = 'usage: ' // this%program_name // ' '
 
       act_iter = this%optionals%begin()
       do while (act_iter /= this%optionals%end())
