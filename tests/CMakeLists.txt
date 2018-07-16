@@ -1,7 +1,6 @@
 set(pf_tests
   Test_Cast.pf
   Test_BaseAction.pf
-  Test_Arg.pf
   Test_ArgParser.pf
   )
 

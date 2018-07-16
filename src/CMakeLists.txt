@@ -10,9 +10,7 @@ set(srcs
   ActionVector.F90
   StringActionMap.F90
 
-  Arg.F90
   ArgParser.F90
-  ArgVector.F90
   Cast.F90
   CommandLineArguments.F90
   ErrorCodes.F90

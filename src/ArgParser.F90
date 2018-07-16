@@ -11,9 +11,7 @@
 module fp_ArgParser_mod
    use fp_BaseAction_mod
    use fp_ActionVector_mod
-   use fp_Arg_mod
    use fp_AbstractArgParser_mod
-   use fp_ArgVector_mod
    use fp_StringVector_mod
    use fp_BaseAction_mod
    use fp_StoreAction_mod
@@ -30,12 +28,10 @@ module fp_ArgParser_mod
       private
       type (ActionVector) :: optionals
       type (ActionVector) :: positionals
-      type (ArgVector) :: options
       type (StringActionMap) :: registry
       logical :: is_initialized = .false.
       character(:), allocatable :: program_name
    contains
-      generic :: add_argument => add_argument_as_option
       generic :: add_argument => add_argument_as_action
       generic :: add_argument => add_argument_as_attributes
       generic :: parse_args => parse_args_command_line, parse_args_args
@@ -43,11 +39,9 @@ module fp_ArgParser_mod
       procedure :: parse_args_command_line
       procedure :: parse_args_args
 
-      procedure :: add_argument_as_option
       procedure :: add_argument_as_action
       procedure :: add_argument_as_attributes
       procedure :: get_defaults
-      procedure :: get_defaults2
       procedure :: get_option_matching
       procedure :: print_help
       procedure :: print_help_header
@@ -109,14 +103,6 @@ contains
 
 
 
-   subroutine add_argument_as_option(this, argument)
-      class (ArgParser), intent(inout) :: this
-      type (Arg), intent(in) :: argument
-
-      call this%options%push_back(argument)
-
-   end subroutine add_argument_as_option
-
    subroutine add_argument_as_action(this, action)
       class (ArgParser), intent(inout) :: this
       class (BaseAction), intent(in) :: action
@@ -151,16 +137,10 @@ contains
       character(*), optional, intent(in) :: help
       class(*), optional, intent(in) :: default
 
-      type (Arg) :: opt
-      class (BaseAction), allocatable :: arg_
+      class (BaseAction), allocatable :: arg
       character(:), allocatable :: action_
       
       _UNUSED_DUMMY(unused)
-
-      ! old
-      opt = opt%make_option(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & action=action, type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
-      call this%add_argument(opt)
 
       if (present(action)) then
          action_ = action
@@ -168,10 +148,10 @@ contains
          action_ = 'store'
       end if
 
-      arg_ = this%registry%at(action_)
-      call arg_%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
+      arg = this%registry%at(action_)
+      call arg%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
            & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
-      call this%add_argument(arg_)
+      call this%add_argument(arg)
       
    end subroutine add_argument_as_attributes
 
@@ -212,7 +192,7 @@ contains
       _UNUSED_DUMMY(unused)
       
       ! TODO:  Hopefully this is a temporary workaround for ifort 19 beta
-      call this%get_defaults2(option_values)
+      call this%get_defaults(option_values)
 
       ith = 0
       
@@ -270,25 +250,7 @@ contains
 
    end function parse_args_args
 
-   function get_defaults(this) result(option_values)
-      type (StringUnlimitedMap) :: option_values
-      class (ArgParser), intent(in) :: this
-
-      type (Arg), pointer :: opt
-      type (ArgVectorIterator) :: opt_iter
-
-      opt_iter = this%options%begin()
-      do while (opt_iter /= this%options%end())
-         opt => opt_iter%get()
-         if (opt%has_default()) then
-            call option_values%insert(opt%get_destination(), opt%get_default())
-         end if
-         call opt_iter%next()
-      end do
-      
-   end function get_defaults
-
-   subroutine get_defaults2(this, option_values)
+   subroutine get_defaults(this, option_values)
       type (StringUnlimitedMap) :: option_values
       class (ArgParser), intent(in) :: this
 
@@ -304,7 +266,7 @@ contains
          call option_iter%next()
       end do
       
-   end subroutine get_defaults2
+   end subroutine get_defaults
 
    function get_option_matching(this, argument, embedded_value) result(opt)
       class (BaseAction), pointer :: opt
@@ -365,8 +327,6 @@ contains
    subroutine print_help(this)
       class (ArgParser), target, intent(in) :: this
 
-      type (ArgVectorIterator) :: opt_iter
-      type (Arg), pointer :: opt
       type (ActionVectorIterator) :: act_iter
       type (BaseAction), pointer :: act
 
@@ -406,10 +366,8 @@ contains
       character(:), pointer :: opt_string
 
       type (StringVector), pointer :: opt_strings
-      type (ArgVectorIterator) :: opt_iter
       type (ActionVectorIterator) :: act_iter
       class (BaseAction), pointer :: act
-      type (Arg), pointer :: opt
 
       header = 'usage: ' // this%program_name // ' '
 
@@ -480,34 +438,4 @@ contains
 
    end subroutine add_action
 
-!!$   !  Methods for class Action and subclasses
-!!$
-!!$   subroutine act(this, parser, values)
-!!$      class (Action), intent(inout) :: this
-!!$      class (ArgParser), intent(inout) :: parser
-!!$      class (*), intent(in) :: values(:)
-!!$
-!!$      print*,'unimplemented'
-!!$   end subroutine act
-!!$
-!!$   subroutine act_store(this, parser, values)
-!!$      class (StoreAction), intent(inout) :: this
-!!$      class (ArgParser), intent(inout) :: parser
-!!$      class (*), intent(in) :: values(:)
-!!$
-!!$      call parser%insert(this%dest, values)
-!!$      
-!!$   end subroutine act_store
-!!$
-!!$   subroutine act_help(this, parser, values)
-!!$      class (StoreAction), intent(inout) :: this
-!!$      class (ArgParser), intent(inout) :: parser
-!!$      class (*), intent(in) :: values(:)
-!!$
-!!$      call parser%print_help()
-!!$      call parser%exit()
-!!$      
-!!$   end subroutine act_store
-!!$
-   
 end module fp_ArgParser_mod
