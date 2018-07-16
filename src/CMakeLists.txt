@@ -22,8 +22,11 @@ set(srcs
   fParse.F90
   )
 
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
+include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
 include_directories(${fParse_SOURCE_DIR}/include)
 include_directories(${ftl_install_dir}/include)
+
 
 add_library(fparse STATIC ${srcs})
 if (NOT FTL)
@@ -31,3 +34,5 @@ if (NOT FTL)
 endif()
 
 
+install (TARGETS fparse DESTINATION lib)
+install (DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include)

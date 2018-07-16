@@ -19,7 +19,7 @@ foreach (file ${pf_tests})
 endforeach()
 
 
-include_directories(${CMAKE_BINARY_DIR}/mod)
+include_directories(${CMAKE_BINARY_DIR}/src/mod)
 include_directories(${PFUNIT}/mod)
 include_directories(${fParse_BINARY_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
