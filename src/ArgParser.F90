@@ -136,7 +136,7 @@ contains
       character(*), optional, intent(in) :: type
       class(*), optional, intent(in) :: n_arguments
       character(*), optional, intent(in) :: dest
-      character(*), optional, intent(in) :: const
+      class(*), optional, intent(in) :: const
       character(*), optional, intent(in) :: help
       class(*), optional, intent(in) :: default
 
@@ -236,21 +236,42 @@ contains
                case ('?')
                   if (embedded_value /= '') then
                      argument => embedded_value
+                     select case (opt%get_type())
+                     case ('string')
+                        args = argument
+                     case ('integer')
+                        read(argument,*) arg_value_int
+                        args = arg_value_int
+                     case ('real')
+                        read(argument,*) arg_value_real
+                        args = arg_value_real
+                     end select
+                     deallocate(embedded_value)
                   else
                      call iter%next()
-                     argument => iter%get()
+                     if (iter /= arguments%end()) then
+                        argument => iter%get()
+                     else
+                        call iter%previous()
+                        argument => null()
+                     end if
+                     if (.not. associated(argument)) then
+                        args = opt%get_const()
+                     elseif (argument(1:1) == '-') then
+                        args = opt%get_const()
+                     else
+                        select case (opt%get_type())
+                        case ('string')
+                           args = argument
+                        case ('integer')
+                           read(argument,*) arg_value_int
+                           args = arg_value_int
+                        case ('real')
+                           read(argument,*) arg_value_real
+                           args = arg_value_real
+                        end select
+                     end if
                   end if
-                  select case (opt%get_type())
-                  case ('string')
-                     args = argument
-                  case ('integer')
-                     read(argument,*) arg_value_int
-                     args = arg_value_int
-                  case ('real')
-                     read(argument,*) arg_value_real
-                     args = arg_value_real
-                  end select
-                  deallocate(embedded_value)
                   call opt%act(option_values, this, value=args)
                   deallocate(args)
                case default
