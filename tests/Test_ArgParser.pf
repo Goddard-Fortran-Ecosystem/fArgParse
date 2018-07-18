@@ -278,4 +278,58 @@ contains
       
    end subroutine test_position_option
 
+   @test
+   subroutine test_nargs_is_question_mark_1_arg()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', n_arguments='?')
+      call arguments%push_back('-n 1')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+      
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(1, n)
+
+   end subroutine test_nargs_is_question_mark_1_arg
+
+   @test
+   subroutine test_nargs_is_question_mark_0_arg()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', n_arguments='?', const=3)
+      call arguments%push_back('-n')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+      
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(3, n)
+
+   end subroutine test_nargs_is_question_mark_0_arg
+
+
+
 end module Test_ArgParser_mod

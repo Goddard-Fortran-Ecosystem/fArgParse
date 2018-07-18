@@ -134,7 +134,7 @@ contains
 
       character(*), optional, intent(in) :: action
       character(*), optional, intent(in) :: type
-      integer, optional, intent(in) :: n_arguments
+      class(*), optional, intent(in) :: n_arguments
       character(*), optional, intent(in) :: dest
       character(*), optional, intent(in) :: const
       character(*), optional, intent(in) :: help
@@ -190,7 +190,6 @@ contains
       class(*), allocatable :: args  ! scalar for now, but should be a list
 
       integer :: ith
-      integer :: n_arguments
 
       _UNUSED_DUMMY(unused)
       
@@ -205,31 +204,58 @@ contains
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
 
-            n_arguments = opt%get_n_arguments()
-            ! Must be 1 or zero for now
-            select case(n_arguments)
-            case (0)
-               call opt%act(option_values, this, value=argument)
-            case (1)
-               if (embedded_value /= '') then
-                  argument => embedded_value
-               else
-                  call iter%next()
-                  argument => iter%get()
-               end if
-               select case (opt%get_type())
-               case ('string')
-                  args = argument
-               case ('integer')
-                  read(argument,*) arg_value_int
-                  args = arg_value_int
-               case ('real')
-                  read(argument,*) arg_value_real
-                  args = arg_value_real
+            select type (n_arguments => opt%get_n_arguments())
+            type is (integer)
+               ! Must be 1 or zero for now
+               select case(n_arguments)
+               case (0)
+                  call opt%act(option_values, this, value=argument)
+               case (1)
+                  if (embedded_value /= '') then
+                     argument => embedded_value
+                  else
+                     call iter%next()
+                     argument => iter%get()
+                  end if
+                  select case (opt%get_type())
+                  case ('string')
+                     args = argument
+                  case ('integer')
+                     read(argument,*) arg_value_int
+                     args = arg_value_int
+                  case ('real')
+                     read(argument,*) arg_value_real
+                     args = arg_value_real
+                  end select
+                  deallocate(embedded_value)
+                  call opt%act(option_values, this, value=args)
+                  deallocate(args)
                end select
-               deallocate(embedded_value)
-               call opt%act(option_values, this, value=args)
-               deallocate(args)
+            type is (character(*))
+               select case(n_arguments)
+               case ('?')
+                  if (embedded_value /= '') then
+                     argument => embedded_value
+                  else
+                     call iter%next()
+                     argument => iter%get()
+                  end if
+                  select case (opt%get_type())
+                  case ('string')
+                     args = argument
+                  case ('integer')
+                     read(argument,*) arg_value_int
+                     args = arg_value_int
+                  case ('real')
+                     read(argument,*) arg_value_real
+                     args = arg_value_real
+                  end select
+                  deallocate(embedded_value)
+                  call opt%act(option_values, this, value=args)
+                  deallocate(args)
+               case default
+                  print*,'unimplemented'
+               end select
             end select
          else ! is positional
             ith = ith + 1
@@ -382,11 +408,16 @@ contains
          opt_string => opt_strings%front()
          header = header // '[' // opt_string
 
-         if (act%get_n_arguments() > 0) then
-            header = header // ' ' // upper_case(act%get_destination())
-         end if
-         header = header // ']'
-         call act_iter%next()
+         select type (n_arguments => act%get_n_arguments())
+         type is (integer)
+            if (n_arguments > 0) then
+               header = header // ' ' // upper_case(act%get_destination())
+            end if
+            header = header // ']'
+            call act_iter%next()
+         type is (character(*))
+            print*,'unimplemented'
+         end select
       end do
 
       if (this%positionals%size() > 0) then

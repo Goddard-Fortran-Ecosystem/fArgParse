@@ -33,7 +33,7 @@ contains
       class (KeywordEnforcer), optional, intent(in) :: unused
 
       character(len=*), optional, intent(in) :: type
-      integer, optional, intent(in) :: n_arguments
+      class(*), optional, intent(in) :: n_arguments
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: default
       class(*), optional, intent(in) :: const
