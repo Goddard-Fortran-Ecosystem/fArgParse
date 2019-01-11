@@ -160,7 +160,7 @@ contains
 
 
    function parse_args_command_line(this, unused, unprocessed) result(option_values)
-      use fp_CommandLineArguments_mod
+     use fp_CommandLineArguments_mod
       type (StringUnlimitedMap) :: option_values
       class (ArgParser), intent(in) :: this
       class (KeywordEnforcer), optional, intent(in) :: unused
@@ -173,6 +173,8 @@ contains
 
 
    function parse_args_args(this, arguments, unused, unprocessed) result(option_values)
+      use fp_IntegerVectorMod
+      use fp_RealVectorMod
       type (StringUnlimitedMap) :: option_values
       class (ArgParser), intent(in) :: this
       type (StringVector), target, intent(in) :: arguments
@@ -190,6 +192,10 @@ contains
       class(*), allocatable :: args  ! scalar for now, but should be a list
 
       integer :: ith
+      type(IntegerVector) :: integer_list
+      type(RealVector) :: real_list
+      type(StringVector) :: string_list
+      integer :: i
 
       _UNUSED_DUMMY(unused)
       
@@ -206,7 +212,6 @@ contains
 
             select type (n_arguments => opt%get_n_arguments())
             type is (integer)
-               ! Must be 1 or zero for now
                select case(n_arguments)
                case (0)
                   call opt%act(option_values, this, value=argument)
@@ -215,6 +220,7 @@ contains
                      argument => embedded_value
                   else
                      call iter%next()
+                     ! TODO: should raise exception if there are not more arguments.
                      argument => iter%get()
                   end if
                   select case (opt%get_type())
@@ -230,6 +236,36 @@ contains
                   deallocate(embedded_value)
                   call opt%act(option_values, this, value=args)
                   deallocate(args)
+               case (2:)
+                  ! Implementing as arg as vector of unlimited poly
+                  ! But really should be a vector of specific type (depending)
+                     
+                  select case (opt%get_type())
+                  case ('string')
+                     do i = 1, n_arguments
+                        call iter%next()
+                        argument => iter%get()
+                        call string_list%push_back(argument)
+                     end do
+                     call opt%act(option_values, this, value=string_list)
+                  case ('integer')
+                     do i = 1, n_arguments
+                        call iter%next()
+                        argument => iter%get()
+                        read(argument,*) arg_value_int
+                        call integer_list%push_back(arg_value_int)
+                     end do
+                     call opt%act(option_values, this, value=integer_list)
+                  case ('real')
+                     do i = 1, n_arguments
+                        call iter%next()
+                        argument => iter%get()
+                        read(argument,*) arg_value_real
+                        call real_list%push_back(arg_value_real)
+                     end do
+                     call opt%act(option_values, this, value=real_list)
+                  end select
+                  deallocate(embedded_value)
                end select
             type is (character(*))
                select case(n_arguments)

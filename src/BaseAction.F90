@@ -92,7 +92,7 @@ contains
             else ! is positinal argument
                this%destination = opt_string(:)
                this%positional = .true.
-!!$               if (present(dest)) then error
+   !!$               if (present(dest)) then error
                exit
             end if
             call iter%next()
@@ -108,7 +108,8 @@ contains
       if (present(n_arguments)) then
          this%n_arguments = n_arguments
       else
-         this%n_arguments = 1 ! default
+!!$           this%n_arguments = 1 ! default
+           allocate(this%n_arguments, source=1) ! odd workaround for gfortran 8.2
       end if
 
       if (present(help)) then

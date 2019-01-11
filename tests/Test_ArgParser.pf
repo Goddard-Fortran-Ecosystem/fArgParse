@@ -165,7 +165,7 @@ contains
       @assertAssociated(opt_value)
 
       call cast(options%at('f'), string, rc=status)
-      @assertEqual(SUCCESS, status)
+       @assertEqual(SUCCESS, status)
       @assertEqual('foo', string)
 
    end subroutine test_option_type_string
@@ -279,31 +279,111 @@ contains
    end subroutine test_position_option
 
    @test
-   subroutine test_nargs_is_question_mark_1_arg()
-      type (ArgParser) :: p
+   subroutine test_nargs_is_2_ints()
+     use fp_IntegerVectorMod
+     type (ArgParser) :: p
       type (StringVector) :: arguments
       type (StringUnlimitedMap) :: options
 
       class(*), pointer :: opt_value
       integer :: status
-      integer :: n
+      type (IntegerVector) :: found
+      integer :: f1, f2
 
       p = ArgParser()
-      call p%add_argument('-n', type='integer', n_arguments='?')
-      call arguments%push_back('-n 1')
+      call p%add_argument('--list', type='integer', n_arguments=2)
+      call arguments%push_back('--list')
+      call arguments%push_back('5')
+      call arguments%push_back('7')
 
-      ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
-      @assertAssociated(opt_value)
-      
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%at('list'), found, rc=status)
       @assertEqual(SUCCESS, status)
-      @assertEqual(1, n)
 
-   end subroutine test_nargs_is_question_mark_1_arg
+      @assertEqual(2, found%size())
 
+      call cast(found%at(1), f1, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(5, f1)
+
+      call cast(found%at(2), f2, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(7, f2)
+
+    end subroutine test_nargs_is_2_ints
+
+   @test
+   subroutine test_nargs_is_2_reals()
+     use fp_RealVectorMod
+     type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      type (RealVector) :: found
+      real :: f1, f2
+
+      p = ArgParser()
+      call p%add_argument('--list', type='real', n_arguments=2)
+      call arguments%push_back('--list')
+      call arguments%push_back('5.')
+      call arguments%push_back('7.')
+
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      call cast(options%at('list'), found, rc=status)
+      @assertEqual(SUCCESS, status)
+
+      @assertEqual(2, found%size())
+
+      call cast(found%at(1), f1, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(5., f1)
+
+      call cast(found%at(2), f2, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(7., f2)
+
+    end subroutine test_nargs_is_2_reals
+
+   @test
+   subroutine test_nargs_is_2_strings()
+     type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      type (StringVector) :: found
+      character(:), allocatable :: f1, f2
+
+      p = ArgParser()
+      call p%add_argument('--list', type='string', n_arguments=2)
+      call arguments%push_back('--list')
+      call arguments%push_back('cat')
+      call arguments%push_back('dog')
+
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      call cast(options%at('list'), found, rc=status)
+      @assertEqual(SUCCESS, status)
+
+      @assertEqual(2, found%size())
+
+      call cast(found%at(1), f1, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual('cat', f1)
+
+      call cast(found%at(2), f2, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual('dog', f2)
+
+    end subroutine test_nargs_is_2_strings
+
+   ! Check that using n_arguments='?' works correctly when there are
+   ! zero associated parameters.
    @test
    subroutine test_nargs_is_question_mark_0_arg()
       type (ArgParser) :: p
@@ -329,6 +409,34 @@ contains
       @assertEqual(3, n)
 
    end subroutine test_nargs_is_question_mark_0_arg
+
+   ! Check that using n_arguments='?' works correctly when there is
+   ! one associated parameters.
+   @test
+   subroutine test_nargs_is_question_mark_1_arg()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', n_arguments='?')
+      call arguments%push_back('-n 1')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+      
+      call cast(options%at('n'), n, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(1, n)
+
+   end subroutine test_nargs_is_question_mark_1_arg
 
 
 
