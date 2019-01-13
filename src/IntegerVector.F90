@@ -1,6 +1,6 @@
 module fp_IntegerVectorMod
 
-#  define _type type(integer)
+#  define _type type(integer) 
 #  define _vector IntegerVector
 #  define _vectoriterator IntegerVectorIterator
 #  include "templates/vector.inc"

@@ -108,8 +108,7 @@ contains
       if (present(n_arguments)) then
          this%n_arguments = n_arguments
       else
-!!$           this%n_arguments = 1 ! default
-           allocate(this%n_arguments, source=1) ! odd workaround for gfortran 8.2
+         this%n_arguments = None
       end if
 
       if (present(help)) then

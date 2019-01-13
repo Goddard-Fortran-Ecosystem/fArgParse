@@ -4,6 +4,7 @@ module Test_ArgParser_mod
    use fp_StringVector_mod
    use fp_StringUnlimitedMap_mod
    use fp_Cast_mod
+   use fp_IntegerVectorMod
    use fp_ErrorCodes_mod
    implicit none
 
@@ -165,7 +166,7 @@ contains
       @assertAssociated(opt_value)
 
       call cast(options%at('f'), string, rc=status)
-       @assertEqual(SUCCESS, status)
+      @assertEqual(SUCCESS, status)
       @assertEqual('foo', string)
 
    end subroutine test_option_type_string
@@ -280,7 +281,6 @@ contains
 
    @test
    subroutine test_nargs_is_2_ints()
-     use fp_IntegerVectorMod
      type (ArgParser) :: p
       type (StringVector) :: arguments
       type (StringUnlimitedMap) :: options
@@ -403,7 +403,6 @@ contains
       @assertEqual(1, options%size())
       opt_value => options%at('n')
       @assertAssociated(opt_value)
-      
       call cast(options%at('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(3, n)
@@ -411,7 +410,7 @@ contains
    end subroutine test_nargs_is_question_mark_0_arg
 
    ! Check that using n_arguments='?' works correctly when there is
-   ! one associated parameters.
+   ! one associated parameter.
    @test
    subroutine test_nargs_is_question_mark_1_arg()
       type (ArgParser) :: p
@@ -419,12 +418,14 @@ contains
       type (StringUnlimitedMap) :: options
 
       class(*), pointer :: opt_value
+      type(IntegerVector) :: found
       integer :: status
       integer :: n
 
       p = ArgParser()
       call p%add_argument('-n', type='integer', n_arguments='?')
-      call arguments%push_back('-n 1')
+      call arguments%push_back('-n')
+      call arguments%push_back('1')
 
       ! sanity checks
       options = p%parse_args(arguments)
@@ -438,6 +439,99 @@ contains
 
    end subroutine test_nargs_is_question_mark_1_arg
 
+
+   ! Check that using n_arguments='*' works correctly when there is
+   ! no associated parameter.
+   @test
+   subroutine test_nargs_is_asterisk_0_arg()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      type(IntegerVector) :: found
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', n_arguments='*', default=-1)
+      call arguments%push_back('-n')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+
+      call cast(options%at('n'), found, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(0, found%size())
+
+    end subroutine test_nargs_is_asterisk_0_arg
+
+   ! Check that using n_arguments='*' works correctly when there is
+   ! one associated parameter.
+   @test
+   subroutine test_nargs_is_asterisk_1_arg()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      type(IntegerVector) :: found
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', n_arguments='*')
+      call arguments%push_back('-n')
+      call arguments%push_back('3')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+      
+      call cast(options%at('n'), found, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(1, found%size())
+      @assertEqual(3, found%at(1))
+
+    end subroutine test_nargs_is_asterisk_1_arg
+
+   ! Check that using n_arguments='*' works correctly when there is
+   ! one associated parameter.
+   @test
+   subroutine test_nargs_is_asterisk_2_arg()
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
+      class(*), pointer :: opt_value
+      type(IntegerVector) :: found
+      integer :: status
+      integer :: n
+
+      p = ArgParser()
+      call p%add_argument('-n', type='integer', n_arguments='*')
+      call arguments%push_back('-n')
+      call arguments%push_back('3')
+      call arguments%push_back('5')
+
+      ! sanity checks
+      options = p%parse_args(arguments)
+      @assertEqual(1, options%size())
+      opt_value => options%at('n')
+      @assertAssociated(opt_value)
+      
+      call cast(options%at('n'), found, rc=status)
+      @assertEqual(SUCCESS, status)
+      @assertEqual(2, found%size())
+      @assertEqual(3, found%at(1))
+      @assertEqual(5, found%at(2))
+
+    end subroutine test_nargs_is_asterisk_2_arg
 
 
 end module Test_ArgParser_mod
