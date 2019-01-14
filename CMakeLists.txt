@@ -13,10 +13,9 @@ endif()
 # Need pFUnit if want to build tests
 set(PFUNIT "" CACHE PATH "(optional) path to installed testing framework")
 
-# By default pFUnit uses FTL as a git submodule.   But this can be overridden with:
-set(FTL "" CACHE PATH "Optional path to externally installed FTL package.")
-include(FindFTL)
-
+# By default pFUnit uses gFTL as a git submodule.   But this can be overridden with:
+set(GFTL "" CACHE PATH "Optional path to externally installed gFTL package.")
+include(FindGFTL)
 
 
 
