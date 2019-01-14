@@ -10,6 +10,9 @@ module fp_Cast_mod
       module procedure cast_to_integer
       module procedure cast_to_string
       module procedure cast_to_real
+      module procedure cast_to_integer_vector
+      module procedure cast_to_real_vector
+      module procedure cast_to_string_vector
    end interface cast
 
 
@@ -98,4 +101,67 @@ contains
 
    end subroutine cast_to_real
 
+   subroutine cast_to_integer_vector(unlimited, v, rc)
+     use fp_IntegerVectorMod
+      class(*), intent(in) :: unlimited
+      type(IntegerVector), intent(out) :: v
+      integer, optional, intent(out) :: rc
+
+      select type (q => unlimited)
+      type is (IntegerVector)
+         v = q
+         if (present(rc)) then
+            rc = SUCCESS
+         end if
+      class default
+         if (present(rc)) then
+            rc = INCOMPATIBLE_DYNAMIC_TYPE
+         end if
+      end select
+
+    end subroutine cast_to_integer_vector
+
+   
+   subroutine cast_to_real_vector(unlimited, v, rc)
+     use fp_RealVectorMod
+      class(*), intent(in) :: unlimited
+      type(RealVector), intent(out) :: v
+      integer, optional, intent(out) :: rc
+
+      select type (q => unlimited)
+      type is (RealVector)
+         v = q
+         if (present(rc)) then
+            rc = SUCCESS
+         end if
+      class default
+         if (present(rc)) then
+            rc = INCOMPATIBLE_DYNAMIC_TYPE
+         end if
+      end select
+
+    end subroutine cast_to_real_vector
+
+   
+   subroutine cast_to_string_vector(unlimited, v, rc)
+     use fp_StringVector_mod
+      class(*), intent(in) :: unlimited
+      type(StringVector), intent(out) :: v
+      integer, optional, intent(out) :: rc
+
+      select type (q => unlimited)
+      type is (StringVector)
+         v = q
+         if (present(rc)) then
+            rc = SUCCESS
+         end if
+      class default
+         if (present(rc)) then
+            rc = INCOMPATIBLE_DYNAMIC_TYPE
+         end if
+      end select
+
+    end subroutine cast_to_string_vector
+
+   
 end module fp_Cast_mod

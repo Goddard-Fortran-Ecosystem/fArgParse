@@ -17,7 +17,7 @@ module fp_BaseAction_mod
       class(*), allocatable :: const
       class(*), allocatable :: default
       character(:), allocatable :: help
-      integer :: n_arguments
+      class(*), allocatable :: n_arguments ! string or integer
       logical :: positional = .false.
    contains
       procedure :: initialize
@@ -58,7 +58,7 @@ contains
       class (KeywordEnforcer), optional, intent(in) :: unused
 
       character(len=*), optional, intent(in) :: type
-      integer, optional, intent(in) :: n_arguments
+      class(*), optional, intent(in) :: n_arguments
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default
@@ -92,7 +92,7 @@ contains
             else ! is positinal argument
                this%destination = opt_string(:)
                this%positional = .true.
-!!$               if (present(dest)) then error
+   !!$               if (present(dest)) then error
                exit
             end if
             call iter%next()
@@ -108,7 +108,7 @@ contains
       if (present(n_arguments)) then
          this%n_arguments = n_arguments
       else
-         this%n_arguments = 1 ! default
+         this%n_arguments = None
       end if
 
       if (present(help)) then
@@ -287,11 +287,14 @@ contains
 
    end function is_positional
 
-   integer function get_n_arguments(this) result(n)
+   function get_n_arguments(this) result(n_arguments)
+      class(*), allocatable :: n_arguments
       class(BaseAction), intent(in) :: this
 
-      n = this%n_arguments
+      n_arguments = this%n_arguments
 
    end function get_n_arguments
+
+
 
 end module fp_BaseAction_mod

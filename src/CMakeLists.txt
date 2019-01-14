@@ -18,6 +18,8 @@ set(srcs
   None.F90
   StringUnlimitedMap.F90
   StringVector.F90
+  IntegerVector.F90
+  RealVector.F90
 
   fParse.F90
   )

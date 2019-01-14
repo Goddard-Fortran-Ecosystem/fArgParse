@@ -13,6 +13,8 @@ module fp_ArgParser_mod
    use fp_ActionVector_mod
    use fp_AbstractArgParser_mod
    use fp_StringVector_mod
+   use fp_IntegerVectorMod
+   use fp_RealVectorMod
    use fp_BaseAction_mod
    use fp_StoreAction_mod
    use fp_ActionVector_mod
@@ -49,12 +51,18 @@ module fp_ArgParser_mod
 
       procedure :: add_action
       procedure :: initialize_registry
+
+      procedure :: handle_option
    end type ArgParser
 
    interface ArgParser
       module procedure new_ArgParser_empty
    end interface ArgParser
 
+
+   type :: String
+      character(:), allocatable :: string
+   end type String
 
 contains
 
@@ -134,9 +142,9 @@ contains
 
       character(*), optional, intent(in) :: action
       character(*), optional, intent(in) :: type
-      integer, optional, intent(in) :: n_arguments
+      class(*), optional, intent(in) :: n_arguments
       character(*), optional, intent(in) :: dest
-      character(*), optional, intent(in) :: const
+      class(*), optional, intent(in) :: const
       character(*), optional, intent(in) :: help
       class(*), optional, intent(in) :: default
 
@@ -160,7 +168,7 @@ contains
 
 
    function parse_args_command_line(this, unused, unprocessed) result(option_values)
-      use fp_CommandLineArguments_mod
+     use fp_CommandLineArguments_mod
       type (StringUnlimitedMap) :: option_values
       class (ArgParser), intent(in) :: this
       class (KeywordEnforcer), optional, intent(in) :: unused
@@ -187,10 +195,9 @@ contains
       integer :: arg_value_int
       real :: arg_value_real
       character(:), target, allocatable :: embedded_value
-      class(*), allocatable :: args  ! scalar for now, but should be a list
+      class(*), allocatable :: args
 
       integer :: ith
-      integer :: n_arguments
 
       _UNUSED_DUMMY(unused)
       
@@ -205,32 +212,20 @@ contains
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
 
-            n_arguments = opt%get_n_arguments()
-            ! Must be 1 or zero for now
-            select case(n_arguments)
-            case (0)
-               call opt%act(option_values, this, value=argument)
-            case (1)
-               if (embedded_value /= '') then
-                  argument => embedded_value
-               else
-                  call iter%next()
-                  argument => iter%get()
-               end if
-               select case (opt%get_type())
-               case ('string')
-                  args = argument
-               case ('integer')
-                  read(argument,*) arg_value_int
-                  args = arg_value_int
-               case ('real')
-                  read(argument,*) arg_value_real
-                  args = arg_value_real
-               end select
-               deallocate(embedded_value)
-               call opt%act(option_values, this, value=args)
-               deallocate(args)
+            call this%handle_option(opt, argument, iter, arguments%end(), embedded_value, args)
+
+            select type (args)
+            type is (String)
+               call opt%act(option_values, this, args%string)
+            class default
+               call opt%act(option_values, this, args)
             end select
+            deallocate(args)
+
+            
+            deallocate(embedded_value)
+            if (iter == arguments%end()) exit
+
          else ! is positional
             ith = ith + 1
             act => this%positionals%at(ith)
@@ -252,6 +247,155 @@ contains
       end do
 
    end function parse_args_args
+
+   subroutine handle_option(this, action, argument, iter, end, embedded_value, args)
+     class(ArgParser), intent(in) :: this
+     class(BaseAction), intent(inout) :: action
+     character(:), pointer :: argument
+     type(StringVectorIterator), intent(inout) :: iter
+     type(StringVectorIterator), intent(in) :: end
+     character(*), target, intent(in) :: embedded_value
+     class(*), allocatable, intent(inout) :: args 
+
+     type(IntegerVector) :: integer_list
+     type(RealVector) :: real_list
+     type(StringVector) :: string_list
+     integer :: i
+
+     integer :: arg_value_int
+     real :: arg_value_real
+     
+     select type (n_arguments => action%get_n_arguments())
+     type is (t_None) ! Single value collected 
+        if (embedded_value /= '') then
+           argument => embedded_value
+        else
+           call iter%next()
+           ! TODO: should raise exception if there are not more arguments.
+           argument => iter%get()
+        end if
+        select case (action%get_type())
+        case ('string')
+           args = String(argument)
+        case ('integer')
+           read(argument,*) arg_value_int
+           args = arg_value_int
+        case ('real')
+           read(argument,*) arg_value_real
+           args = arg_value_real
+        end select
+     type is (integer)
+        select case(n_arguments)
+        case (0) ! Value(s) is determined by action
+           args = None
+        case (1:) ! Fixed number of values collected into vector
+           select case (action%get_type())
+           case ('string')
+              do i = 1, n_arguments
+                 call iter%next()
+                 argument => iter%get()
+                 call string_list%push_back(argument)
+              end do
+              args = string_list
+           case ('integer')
+              do i = 1, n_arguments
+                 call iter%next()
+                 argument => iter%get()
+                 read(argument,*) arg_value_int
+                 call integer_list%push_back(arg_value_int)
+              end do
+              args = integer_list
+           case ('real')
+              do i = 1, n_arguments
+                 call iter%next()
+                 argument => iter%get()
+                 read(argument,*) arg_value_real
+                 call real_list%push_back(arg_value_real)
+              end do
+              args = real_list
+           end select
+        end select
+     type is (character(*)) ! Variable number of values
+        ! Cases: '?','*', and '+'
+        ! TODO: aggregation should terminate when a new optional
+        ! arguemnt is encountered
+        select case(n_arguments)
+        case ('?')
+           if (embedded_value /= '') then ! value is embedded in token
+              argument => embedded_value
+              select case (action%get_type())
+              case ('string')
+                 args = argument
+              case ('integer')
+                 read(argument,*) arg_value_int
+                 args = arg_value_int
+              case ('real')
+                 read(argument,*) arg_value_real
+                 args = arg_value_real
+              end select
+           else ! value (if any) is in next token
+              call iter%next()
+              if (iter /= end) then
+                 argument => iter%get()
+              else ! no more tokens - allowed for nargs=='?'
+                 call iter%previous()
+                 argument => null()
+              end if
+              if (.not. associated(argument)) then
+                 args = action%get_const()
+              elseif (argument(1:1) == '-') then
+                 ! Next token is another optional arg.
+                 ! Use const value.
+                 args = action%get_const()
+              else ! next token is a value
+                 select case (action%get_type())
+                 case ('string')
+                    args = argument
+                 case ('integer')
+                    read(argument,*) arg_value_int
+                    args = arg_value_int
+                 case ('real')
+                    read(argument,*) arg_value_real
+                    args = arg_value_real
+                 end select
+              end if
+           end if
+        case ('*', '+')
+           call iter%next()
+           if (n_arguments == '+' .and. iter == end) then
+              ! TODO: throw exception.  '+' requires at least one value
+           end if
+           do while (iter /= end)
+              argument => iter%get()
+              
+              select case (action%get_type())
+              case ('string')
+                 call string_list%push_back(argument)
+              case ('integer')
+                 read(argument,*) arg_value_int
+                 call integer_list%push_back(arg_value_int)
+              case ('real')
+                 read(argument,*) arg_value_real
+                 call real_list%push_back(arg_value_real)
+              end select
+              call iter%next()
+           end do
+           select case (action%get_type())
+           case ('string')
+              args = string_list
+           case ('integer')
+              args = integer_list
+           case ('real')
+              args = real_list
+           end select
+
+           return
+
+        case default
+           print*,'unimplemented'
+        end select
+     end select
+   end subroutine handle_option
 
    subroutine get_defaults(this, option_values)
       type (StringUnlimitedMap) :: option_values
@@ -382,11 +526,16 @@ contains
          opt_string => opt_strings%front()
          header = header // '[' // opt_string
 
-         if (act%get_n_arguments() > 0) then
-            header = header // ' ' // upper_case(act%get_destination())
-         end if
-         header = header // ']'
-         call act_iter%next()
+         select type (n_arguments => act%get_n_arguments())
+         type is (integer)
+            if (n_arguments > 0) then
+               header = header // ' ' // upper_case(act%get_destination())
+            end if
+            header = header // ']'
+            call act_iter%next()
+         type is (character(*))
+            print*,'unimplemented'
+         end select
       end do
 
       if (this%positionals%size() > 0) then
