@@ -16,25 +16,22 @@ set(srcs
   ErrorCodes.F90
   KeywordEnforcer.F90
   None.F90
-  StringUnlimitedMap.F90
-  StringVector.F90
-  IntegerVector.F90
-  RealVector.F90
 
   fParse.F90
   )
 
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
 include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
-include_directories(${fParse_SOURCE_DIR}/include)
+include_directories(${fArgParse_SOURCE_DIR}/include)
 include_directories(${gftl_install_dir}/include)
+include_directories(${gftl_shared_install_dir}/mod)
 
 
-add_library(fparse STATIC ${srcs})
-if (NOT GFTL)
-  add_dependencies(fparse gFTL)
-endif()
+add_library(fargparse STATIC ${srcs})
+target_link_libraries(fargparse ${gftl_shared_install_dir}/lib/libgFTL-shared.a)
+
+add_dependencies(fargparse gFTL-shared)
 
 
-install (TARGETS fparse DESTINATION lib)
+install (TARGETS fargparse DESTINATION lib)
 install (DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include)

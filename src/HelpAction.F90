@@ -51,7 +51,7 @@ contains
 
 
    subroutine act(this, namespace, parser, value, option_string)
-      use fp_StringUnlimitedMap_mod
+      use gFTL_StringUnlimitedMapMod
       class (HelpAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser

@@ -1,5 +1,5 @@
 module fp_CommandLineArguments_mod
-   use fp_StringVector_mod
+   use gFTL_StringVectorMod
    implicit none
 
    private

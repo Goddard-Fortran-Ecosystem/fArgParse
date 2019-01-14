@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project (fParse
+project (fArgParse
   VERSION 0.1
   LANGUAGES Fortran)
 
@@ -16,6 +16,10 @@ set(PFUNIT "" CACHE PATH "(optional) path to installed testing framework")
 # By default pFUnit uses gFTL as a git submodule.   But this can be overridden with:
 set(GFTL "" CACHE PATH "Optional path to externally installed gFTL package.")
 include(FindGFTL)
+
+# By default pFUnit uses gFTL as a git submodule.   But this can be overridden with:
+set(GFTL_SHARED "" CACHE PATH "Optional path to externally installed gFTL package.")
+include(FindGFTL_SHARED)
 
 
 

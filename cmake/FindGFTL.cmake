@@ -29,4 +29,5 @@ else()
     BUILD_COMMAND make
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${gftl_install_dir}  -DCMAKE_INSTALL_MESSAGE=LAZY
     INSTALL_COMMAND make install)
+
 endif()
