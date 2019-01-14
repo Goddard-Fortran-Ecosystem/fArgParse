@@ -102,7 +102,7 @@ contains
    end subroutine cast_to_real
 
    subroutine cast_to_integer_vector(unlimited, v, rc)
-     use fp_IntegerVectorMod
+     use gFTL_IntegerVectorMod
       class(*), intent(in) :: unlimited
       type(IntegerVector), intent(out) :: v
       integer, optional, intent(out) :: rc
@@ -123,7 +123,7 @@ contains
 
    
    subroutine cast_to_real_vector(unlimited, v, rc)
-     use fp_RealVectorMod
+     use gFTL_RealVectorMod
       class(*), intent(in) :: unlimited
       type(RealVector), intent(out) :: v
       integer, optional, intent(out) :: rc
@@ -144,7 +144,7 @@ contains
 
    
    subroutine cast_to_string_vector(unlimited, v, rc)
-     use fp_StringVector_mod
+     use gFTL_StringVectorMod
       class(*), intent(in) :: unlimited
       type(StringVector), intent(out) :: v
       integer, optional, intent(out) :: rc

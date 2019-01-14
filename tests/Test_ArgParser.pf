@@ -1,11 +1,12 @@
 module Test_ArgParser_mod
    use pFUnit_mod
    use fp_ArgParser_mod
-   use fp_StringVector_mod
-   use fp_StringUnlimitedMap_mod
    use fp_Cast_mod
-   use fp_IntegerVectorMod
    use fp_ErrorCodes_mod
+   use gFTL_StringVectorMod
+   use gFTL_StringUnlimitedMapMod
+   use gFTL_IntegerVectorMod
+   use gFTL_RealVectorMod
    implicit none
 
    @suite(name='ArgParser_suite')
@@ -315,7 +316,6 @@ contains
 
    @test
    subroutine test_nargs_is_2_reals()
-     use fp_RealVectorMod
      type (ArgParser) :: p
       type (StringVector) :: arguments
       type (StringUnlimitedMap) :: options

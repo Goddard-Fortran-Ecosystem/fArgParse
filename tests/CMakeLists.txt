@@ -21,18 +21,19 @@ endforeach()
 
 include_directories(${CMAKE_BINARY_DIR}/src/mod)
 include_directories(${PFUNIT}/mod)
-include_directories(${fParse_BINARY_DIR}/src)
+include_directories(${fArgParse_BINARY_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${gftl_shared_install_dir}/mod)
 
-add_library(fparse_tests EXCLUDE_FROM_ALL ${test_srcs})
-target_link_libraries(fparse_tests fparse ${PFUNIT}/lib/libpfunit.a)
-add_executable (test_fparse.x EXCLUDE_FROM_ALL ${PFUNIT}/include/driver.F90)
+add_library(fargparse_tests EXCLUDE_FROM_ALL ${test_srcs})
+target_link_libraries(fargparse_tests fargparse ${PFUNIT}/lib/libpfunit.a)
+add_executable (test_fargparse.x EXCLUDE_FROM_ALL ${PFUNIT}/include/driver.F90)
 set_source_files_properties(${CMAKE_SOURCE_DIR}/include/driver.F90 PROPERTIES COMPILE_DEFINITIONS _TEST_SUITES="testSuites.inc")
-target_link_libraries(test_fparse.x fparse_tests)
+target_link_libraries(test_fargparse.x fargparse_tests)
 
-add_dependencies(tests test_fparse.x)
-add_test(NAME fparse_tests
-  COMMAND test_fparse.x
+add_dependencies(tests test_fargparse.x)
+add_test(NAME fargparse_tests
+  COMMAND test_fargparse.x
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
 

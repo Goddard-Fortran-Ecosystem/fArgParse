@@ -2,7 +2,7 @@
 module fp_BaseAction_mod
    use fp_AbstractArgParser_mod, only: AbstractAction
    use fp_KeywordEnforcer_mod
-   use fp_StringVector_mod
+   use gFTL_StringVectorMod
    use fp_None_mod
    implicit none
    private
@@ -256,7 +256,7 @@ contains
 
    subroutine act(this, namespace, parser, value, option_string)
       use fp_AbstractArgParser_mod, only: AbstractArgParser
-      use fp_stringUnlimitedMap_mod
+      use gFTL_stringUnlimitedMapMod
       class (BaseAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
