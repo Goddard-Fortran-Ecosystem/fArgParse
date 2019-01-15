@@ -30,7 +30,13 @@ include_directories(${gftl_shared_install_dir}/mod)
 add_library(fargparse STATIC ${srcs})
 target_link_libraries(fargparse ${gftl_shared_install_dir}/lib/libgFTL-shared.a)
 
-add_dependencies(fargparse gFTL-shared)
+if (NOT GFTL)
+  add_dependencies(fargparse gFTL)
+endif()
+
+if (NOT GFTL_SHARED)
+  add_dependencies(fargparse gFTL-shared)
+endif()
 
 
 install (TARGETS fargparse DESTINATION lib)
