@@ -222,7 +222,6 @@ contains
             end select
             deallocate(args)
 
-            
             deallocate(embedded_value)
             if (iter == arguments%end()) exit
 
@@ -480,8 +479,6 @@ contains
       call this%print_help_header()
 
       if (this%positionals%size() > 0) then
-         print*,' '
-         print*,'positional arguments:'
          act_iter = this%positionals%begin()
          do while (act_iter /= this%positionals%end())
             act => act_iter%get()
@@ -527,15 +524,14 @@ contains
          header = header // '[' // opt_string
 
          select type (n_arguments => act%get_n_arguments())
+         type is (t_None)
+            header = header // ' ' // upper_case(act%get_destination())
          type is (integer)
-            if (n_arguments > 0) then
-               header = header // ' ' // upper_case(act%get_destination())
-            end if
-            header = header // ']'
-            call act_iter%next()
+            header = header // repeat(' ' // upper_case(act%get_destination()), n_arguments)
          type is (character(*))
-            print*,'unimplemented'
          end select
+         header = header // ']'
+         call act_iter%next()
       end do
 
       if (this%positionals%size() > 0) then
