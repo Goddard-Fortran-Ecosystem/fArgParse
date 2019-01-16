@@ -35,6 +35,3 @@ if (examples)
   add_subdirectory(Examples)
 endif()
 
-include_directories(${CMAKE_BINARY_DIR}/src/mod)
-add_executable(hangs.x hangs.F90)
-target_link_libraries(hangs.x fargparse)
