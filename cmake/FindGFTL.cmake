@@ -1,11 +1,11 @@
 if (GFTL) # use default
-  set(gftl_install_dir ${GFTL})
+  set(gFTL_install_dir ${GFTL})
 else()
-  set(gftl_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/gFTL)
-  set(gftl_install_dir ${CMAKE_CURRENT_BINARY_DIR}/gFTL/install)
+  set(gFTL_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/gFTL)
+  set(gFTL_install_dir ${CMAKE_CURRENT_BINARY_DIR}/gFTL/install)
 
   include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
-  file(GLOB all_files ${gftl_source_dir}/*)
+  file(GLOB all_files ${gFTL_source_dir}/*)
   list(LENGTH all_files n_files)
 
   if(n_files LESS_EQUAL 3)
@@ -24,10 +24,10 @@ else()
     DOWNLOAD_COMMAND ${download_command}
     UPDATE_COMMAND ${update_command}
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/gFTL
-    SOURCE_DIR ${gftl_source_dir}
-    INSTALL_DIR ${gftl_install_dir}
+    SOURCE_DIR ${gFTL_source_dir}
+    INSTALL_DIR ${gFTL_install_dir}
     BUILD_COMMAND make
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${gftl_install_dir}  -DCMAKE_INSTALL_MESSAGE=LAZY
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${gFTL_install_dir}  -DCMAKE_INSTALL_MESSAGE=LAZY
     INSTALL_COMMAND make install)
 
 endif()
