@@ -23,18 +23,21 @@ set(srcs
 set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
 include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
 include_directories(${fArgParse_SOURCE_DIR}/include)
-include_directories(${gftl_install_dir}/include)
-include_directories(${gftl_shared_install_dir}/mod)
+include_directories(${gFTL_install_dir}/include)
+include_directories(${gFTL-shared_install_dir}/mod)
+
+message("one ${gFTL_install_dir}/include")
+message("two ${gFTL-shared_install_dir}/include")
 
 
 add_library(fargparse STATIC ${srcs})
-target_link_libraries(fargparse ${gftl_shared_install_dir}/lib/libgFTL-shared.a)
+target_link_libraries(fargparse ${gFTL_shared_install_dir}/lib/libgFTL-shared.a)
 
 if (NOT GFTL)
   add_dependencies(fargparse gFTL)
 endif()
 
-if (NOT GFTL_SHARED)
+if (NOT GFTL-SHARED)
   add_dependencies(fargparse gFTL-shared)
 endif()
 

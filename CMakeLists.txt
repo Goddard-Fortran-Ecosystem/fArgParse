@@ -18,7 +18,7 @@ set(GFTL "" CACHE PATH "Optional path to externally installed gFTL package.")
 include(FindGFTL)
 
 # By default pFUnit uses gFTL as a git submodule.   But this can be overridden with:
-set(GFTL_SHARED "" CACHE PATH "Optional path to externally installed gFTL package.")
+set(GFTL-SHARED "" CACHE PATH "Optional path to externally installed gFTL-shared package.")
 include(FindGFTL_SHARED)
 
 
