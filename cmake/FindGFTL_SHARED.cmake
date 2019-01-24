@@ -32,7 +32,6 @@ else()
 
   ExternalProject_Add_StepDependencies(gFTL-shared configure gFTL)
   add_library(lib_libgFTL-shared STATIC IMPORTED)
-  message("Huh: ${gFTL-shared_install_dir} ${gFTL-shared_install_dir}")
   set_target_properties(lib_libgFTL-shared PROPERTIES IMPORTED_LOCATION ${gFTL-shared_install_dir}/lib/libgFTL-shared.a)
 
 
