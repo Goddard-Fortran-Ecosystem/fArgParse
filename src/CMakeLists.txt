@@ -31,7 +31,7 @@ message("two ${gFTL-shared_install_dir}/include")
 
 
 add_library(fargparse STATIC ${srcs})
-target_link_libraries(fargparse ${gFTL_shared_install_dir}/lib/libgFTL-shared.a)
+target_link_libraries(fargparse ${gFTL-shared_install_dir}/lib/libgFTL-shared.a)
 
 if (NOT GFTL)
   add_dependencies(fargparse gFTL)

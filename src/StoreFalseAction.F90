@@ -1,10 +1,10 @@
 #include "unused_dummy.fh"
 
-module fp_StoreFalseAction_mod
-   use fp_AbstractArgParser_mod
-   use fp_BaseAction_mod
-   use fp_StoreConstAction_mod
-   use fp_KeywordEnforcer_mod
+module fp_StoreFalseAction
+   use fp_AbstractArgParser
+   use fp_BaseAction
+   use fp_StoreConstAction
+   use fp_KeywordEnforcer
    implicit none
    private
 
@@ -55,4 +55,4 @@ contains
 
    end subroutine initialize
 
-end module fp_StoreFalseAction_mod
+end module fp_StoreFalseAction

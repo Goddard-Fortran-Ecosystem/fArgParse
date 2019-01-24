@@ -1,5 +1,5 @@
-module fp_CommandLineArguments_mod
-   use gFTL_StringVectorMod
+module fp_CommandLineArguments
+   use gFTL_StringVector
    implicit none
 
    private
@@ -35,4 +35,4 @@ contains
    end function get_command_line_arguments
 
 
-end module fp_CommandLineArguments_mod
+end module fp_CommandLineArguments

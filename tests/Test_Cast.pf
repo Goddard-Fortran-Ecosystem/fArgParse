@@ -1,7 +1,7 @@
-module Test_Cast_mod
+module Test_Cast
    use pFUnit_mod
-   use fp_Cast_mod
-   use fp_ErrorCodes_mod
+   use fp_Cast
+   use fp_ErrorCodes
    implicit none
 
    @suite(name='Cast_suite')
@@ -144,4 +144,4 @@ contains
    end subroutine test_cast_to_real_fail
 
 
-end module Test_Cast_mod
+end module Test_Cast

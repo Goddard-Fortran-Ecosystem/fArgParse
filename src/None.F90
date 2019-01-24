@@ -1,4 +1,4 @@
-module fp_None_mod
+module fp_None
    implicit none
    private
 
@@ -28,4 +28,4 @@ module fp_None_mod
         
    end function equal_equal
    
-end module fp_None_mod
+end module fp_None

@@ -1,5 +1,5 @@
-module fp_Cast_mod
-   use fp_ErrorCodes_mod
+module fp_Cast
+   use fp_ErrorCodes
    implicit none
    private
 
@@ -102,7 +102,7 @@ contains
    end subroutine cast_to_real
 
    subroutine cast_to_integer_vector(unlimited, v, rc)
-     use gFTL_IntegerVectorMod
+     use gFTL_IntegerVector
       class(*), intent(in) :: unlimited
       type(IntegerVector), intent(out) :: v
       integer, optional, intent(out) :: rc
@@ -123,7 +123,7 @@ contains
 
    
    subroutine cast_to_real_vector(unlimited, v, rc)
-     use gFTL_RealVectorMod
+     use gFTL_RealVector
       class(*), intent(in) :: unlimited
       type(RealVector), intent(out) :: v
       integer, optional, intent(out) :: rc
@@ -144,7 +144,7 @@ contains
 
    
    subroutine cast_to_string_vector(unlimited, v, rc)
-     use gFTL_StringVectorMod
+     use gFTL_StringVector
       class(*), intent(in) :: unlimited
       type(StringVector), intent(out) :: v
       integer, optional, intent(out) :: rc
@@ -164,4 +164,4 @@ contains
     end subroutine cast_to_string_vector
 
    
-end module fp_Cast_mod
+end module fp_Cast

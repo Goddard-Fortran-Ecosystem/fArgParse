@@ -1,4 +1,4 @@
-module fp_ErrorCodes_mod
+module fp_ErrorCodes
    implicit none
    public
 
@@ -8,4 +8,4 @@ module fp_ErrorCodes_mod
       enumerator :: UNKNOWN_ACTION
    end enum
 
-end module fp_ErrorCodes_mod
+end module fp_ErrorCodes

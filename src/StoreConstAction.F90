@@ -1,9 +1,9 @@
 #include "unused_dummy.fh"
-module fp_StoreConstAction_mod
-   use fp_AbstractArgParser_mod
-   use fp_BaseAction_mod
-   use fp_KeywordEnforcer_mod
-   use fp_None_mod
+module fp_StoreConstAction
+   use fp_AbstractArgParser
+   use fp_BaseAction
+   use fp_KeywordEnforcer
+   use fp_None
    implicit none
    private
 
@@ -60,7 +60,7 @@ contains
 
 
    subroutine act(this, namespace, parser, value, option_string)
-      use gFTL_StringUnlimitedMapMod
+      use gFTL_StringUnlimitedMap
       class (StoreConstAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
@@ -71,4 +71,4 @@ contains
 
    end subroutine act
 
-end module fp_StoreConstAction_mod
+end module fp_StoreConstAction

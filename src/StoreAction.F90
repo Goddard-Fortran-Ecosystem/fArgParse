@@ -1,6 +1,6 @@
-module fp_StoreAction_mod
-   use fp_AbstractArgParser_mod
-   use fp_BaseAction_mod
+module fp_StoreAction
+   use fp_AbstractArgParser
+   use fp_BaseAction
    implicit none
    private
 
@@ -14,7 +14,7 @@ module fp_StoreAction_mod
 contains
 
    subroutine act(this, namespace, parser, value, option_string)
-      use gFTL_StringUnlimitedMapMod
+      use gFTL_StringUnlimitedMap
       class (StoreAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
@@ -25,4 +25,4 @@ contains
 
    end subroutine act
 
-end module fp_StoreAction_mod
+end module fp_StoreAction
