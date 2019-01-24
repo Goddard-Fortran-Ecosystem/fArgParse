@@ -1,5 +1,5 @@
-module Test_BaseAction_mod
-   use fp_BaseAction_mod
+module Test_BaseAction
+   use fp_BaseAction
    use pFUnit_mod
    implicit none
 
@@ -59,4 +59,4 @@ contains
    end subroutine test_get_destination
 
 
-end module Test_BaseAction_mod
+end module Test_BaseAction

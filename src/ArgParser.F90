@@ -8,20 +8,20 @@
 !----------------------------------------------------------------------------
 
 #include "unused_dummy.fh"
-module fp_ArgParser_mod
-   use fp_BaseAction_mod
-   use fp_ActionVector_mod
-   use fp_AbstractArgParser_mod
-   use fp_BaseAction_mod
-   use fp_StoreAction_mod
-   use fp_ActionVector_mod
-   use fp_StringActionMap_mod
-   use fp_KeywordEnforcer_mod
-   use fp_None_mod
-   use gFTL_IntegerVectorMod
-   use gFTL_RealVectorMod
-   use gFTL_StringVectorMod
-   use gFTL_StringUnlimitedMapMod
+module fp_ArgParser
+   use fp_BaseAction
+   use fp_ActionVector
+   use fp_AbstractArgParser
+   use fp_BaseAction
+   use fp_StoreAction
+   use fp_ActionVector
+   use fp_StringActionMap
+   use fp_KeywordEnforcer
+   use fp_None
+   use gFTL_IntegerVector
+   use gFTL_RealVector
+   use gFTL_StringVector
+   use gFTL_StringUnlimitedMap
    implicit none
    private
 
@@ -68,7 +68,7 @@ contains
 
 
    function new_argParser_empty(program_name) result(parser)
-      use fp_CommandLineArguments_mod
+      use fp_CommandLineArguments
       type (ArgParser) :: parser
       character(*), optional, intent(in) :: program_name
 
@@ -86,11 +86,11 @@ contains
    end function new_argParser_empty
 
    subroutine initialize_registry(this)
-      use fp_HelpAction_mod
-      use fp_StoreAction_mod
-      use fp_StoreConstAction_mod
-      use fp_StoreTrueAction_mod
-      use fp_StoreFalseAction_mod
+      use fp_HelpAction
+      use fp_StoreAction
+      use fp_StoreConstAction
+      use fp_StoreTrueAction
+      use fp_StoreFalseAction
       class (ArgParser), intent(inout) :: this
 
       type (HelpAction) :: help_action
@@ -168,7 +168,7 @@ contains
 
 
    function parse_args_command_line(this, unused, unprocessed) result(option_values)
-     use fp_CommandLineArguments_mod
+     use fp_CommandLineArguments
       type (StringUnlimitedMap) :: option_values
       class (ArgParser), intent(in) :: this
       class (KeywordEnforcer), optional, intent(in) :: unused
@@ -586,4 +586,4 @@ contains
 
    end subroutine add_action
 
-end module fp_ArgParser_mod
+end module fp_ArgParser

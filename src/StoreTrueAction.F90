@@ -1,10 +1,10 @@
 #include "unused_dummy.fh"
 
-module fp_StoreTrueAction_mod
-   use fp_AbstractArgParser_mod
-   use fp_BaseAction_mod
-   use fp_StoreConstAction_mod
-   use fp_KeywordEnforcer_mod
+module fp_StoreTrueAction
+   use fp_AbstractArgParser
+   use fp_BaseAction
+   use fp_StoreConstAction
+   use fp_KeywordEnforcer
    implicit none
    private
 
@@ -54,4 +54,4 @@ contains
            & type=type, dest=dest, default=default_, const=.true., help=help)
    end subroutine initialize
 
-end module fp_StoreTrueAction_mod
+end module fp_StoreTrueAction

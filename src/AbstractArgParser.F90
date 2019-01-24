@@ -11,7 +11,7 @@
 
 
 
-module fp_AbstractArgParser_mod
+module fp_AbstractArgParser
    implicit none
    private
    
@@ -40,7 +40,7 @@ module fp_AbstractArgParser_mod
       end subroutine print_help
 
       subroutine act(this, namespace, parser, value, option_string)
-         use gFTL_StringUnlimitedMapMod
+         use gFTL_StringUnlimitedMap
          import AbstractAction
          import AbstractArgParser
          class (AbstractAction), intent(inout) :: this
@@ -52,4 +52,4 @@ module fp_AbstractArgParser_mod
       
    end interface
 
-end module fp_AbstractArgParser_mod
+end module fp_AbstractArgParser

@@ -1,9 +1,9 @@
 #include "unused_dummy.fh"
-module fp_BaseAction_mod
-   use fp_AbstractArgParser_mod, only: AbstractAction
-   use fp_KeywordEnforcer_mod
-   use gFTL_StringVectorMod
-   use fp_None_mod
+module fp_BaseAction
+   use fp_AbstractArgParser, only: AbstractAction
+   use fp_KeywordEnforcer
+   use gFTL_StringVector
+   use fp_None
    implicit none
    private
 
@@ -255,8 +255,8 @@ contains
 
 
    subroutine act(this, namespace, parser, value, option_string)
-      use fp_AbstractArgParser_mod, only: AbstractArgParser
-      use gFTL_stringUnlimitedMapMod
+      use fp_AbstractArgParser, only: AbstractArgParser
+      use gFTL_stringUnlimitedMap
       class (BaseAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
@@ -297,4 +297,4 @@ contains
 
 
 
-end module fp_BaseAction_mod
+end module fp_BaseAction

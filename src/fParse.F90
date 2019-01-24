@@ -1,11 +1,11 @@
 module fParse
-   use fp_ArgParser_mod
-   use fP_CommandLineArguments_mod
-   use fp_Cast_mod
-   use gFTL_StringUnlimitedMapMod
-   use gFTL_StringVectorMod
-   use gFTL_IntegerVectorMod
-   use gFTL_RealVectorMod
+   use fp_ArgParser
+   use fP_CommandLineArguments
+   use fp_Cast
+   use gFTL_StringUnlimitedMap
+   use gFTL_StringVector
+   use gFTL_IntegerVector
+   use gFTL_RealVector
    implicit none
 
    public :: ArgParser
