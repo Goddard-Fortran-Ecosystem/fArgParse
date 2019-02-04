@@ -18,6 +18,7 @@ module fp_ArgParser
    use fp_StringActionMap
    use fp_KeywordEnforcer
    use fp_None
+   use fp_String
    use gFTL_IntegerVector
    use gFTL_RealVector
    use gFTL_StringVector
@@ -59,10 +60,6 @@ module fp_ArgParser
       module procedure new_ArgParser_empty
    end interface ArgParser
 
-
-   type :: String
-      character(:), allocatable :: string
-   end type String
 
 contains
 
@@ -407,7 +404,13 @@ contains
       do while (option_iter /= this%optionals%end())
          opt => option_iter%get()
          if (opt%has_default()) then
-            call option_values%insert(opt%get_destination(), opt%get_default())
+            ! workaround for gfortran
+            select type (q => opt%get_default())
+            type is (String)
+               call option_values%insert(opt%get_destination(), q)
+            class default
+               call option_values%insert(opt%get_destination(), q)
+            end select
          end if
          call option_iter%next()
       end do

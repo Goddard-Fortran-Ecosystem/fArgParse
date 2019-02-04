@@ -8,6 +8,7 @@ set(srcs
   StoreTrueAction.F90
   StoreFalseAction.F90
   ActionVector.F90
+  String.F90
   StringActionMap.F90
 
   ArgParser.F90
