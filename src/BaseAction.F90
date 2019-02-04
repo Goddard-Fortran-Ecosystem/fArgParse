@@ -4,6 +4,7 @@ module fp_BaseAction
    use fp_KeywordEnforcer
    use gFTL_StringVector
    use fp_None
+   use fp_String
    implicit none
    private
 
@@ -116,7 +117,13 @@ contains
       end if
 
       if (present(default)) then
-         this%default = default
+         ! Workaround for gfortran deferred length strings bug
+         select type(default)
+         type is (character(*))
+            this%default = String(default)
+         class default
+            this%default = default
+         end select
       else
          this%default = NONE
       end if
@@ -166,7 +173,12 @@ contains
       class(*), pointer :: default
       class(BaseAction), target, intent(in) :: this
 
-      default => this%default
+      select type (q => this%default)
+      type is (String)
+         default => q
+      class default
+         default => q
+      end select
 
    end function get_default
 

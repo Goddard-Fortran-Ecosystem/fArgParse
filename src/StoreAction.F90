@@ -1,6 +1,7 @@
 module fp_StoreAction
    use fp_AbstractArgParser
    use fp_BaseAction
+   use fp_String
    implicit none
    private
 
@@ -21,7 +22,13 @@ contains
       class(*), intent(in) :: value
       character(*), optional, intent(in) :: option_string
 
-      call namespace%insert(this%get_destination(), value)
+      ! gfortran workaround
+      select type (value)
+      type is (String)
+         call namespace%insert(this%get_destination(), value)
+      class default
+         call namespace%insert(this%get_destination(), value)
+      end select
 
    end subroutine act
 

@@ -1,5 +1,6 @@
 module fp_Cast
-   use fp_ErrorCodes
+  use fp_ErrorCodes
+  use fp_String
    implicit none
    private
 
@@ -61,19 +62,24 @@ contains
    end subroutine cast_to_integer
 
 
-   subroutine cast_to_string(unlimited, string, rc)
+   subroutine cast_to_string(unlimited, s, rc)
       class(*), intent(in) :: unlimited
-      character(:), allocatable, intent(out) :: string
+      character(:), allocatable, intent(out) :: s
       integer, optional, intent(out) :: rc
 
       select type (q => unlimited)
+      type is (String)
+         s = q%string
+         if (present(rc)) then
+            rc = SUCCESS
+         end if
       type is (character(*))
-         string = q
+         s = q
          if (present(rc)) then
             rc = SUCCESS
          end if
       class default
-         string = ''
+         s = ''
          if (present(rc)) then
             rc = INCOMPATIBLE_DYNAMIC_TYPE
          end if
