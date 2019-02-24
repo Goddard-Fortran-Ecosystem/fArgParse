@@ -27,10 +27,6 @@ include_directories(${fArgParse_SOURCE_DIR}/include)
 include_directories(${gFTL_install_dir}/include)
 include_directories(${gFTL-shared_install_dir}/mod)
 
-message("one ${gFTL_install_dir}/include")
-message("two ${gFTL-shared_install_dir}/include")
-
-
 add_library(fargparse STATIC ${srcs})
 target_link_libraries(fargparse ${gFTL-shared_install_dir}/lib/libgFTL-shared.a)
 
