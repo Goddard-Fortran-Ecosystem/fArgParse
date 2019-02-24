@@ -1,8 +1,16 @@
 cmake_minimum_required(VERSION 3.8)
 
-project (fArgParse
+project (FARGPARSE
   VERSION 0.1
   LANGUAGES Fortran)
+
+# Most users of this software do not (should not?) have permissions to
+# install in the cmake default of /usr/local (or equiv on other os's).
+# Below, the default is changed to a directory within the build tree
+# unless the user explicitly sets CMAKE_INSTALL_PREFIX in the cache.
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/installed" CACHE PATH "default install path" FORCE )
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 include(${CMAKE_Fortran_COMPILER_ID} RESULT_VARIABLE found)
@@ -13,59 +21,14 @@ endif()
 # Need pFUnit if want to build tests
 set(PFUNIT "" CACHE PATH "(optional) path to installed testing framework")
 
-find_package(GFTL QUIET)
-if (NOT GFTL_FOUND)
-  if (NOT TARGET gftl)
-    # from https://cliutils.gitlab.io/modern-cmake/chapters/projects/submodule.html
-    find_package(Git QUIET)
-    if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-      option (GIT_SUBMODULE "Check submodules during build" ON)
-      if (GIT_SUBMODULE)
-	message (STATUS "Submodule update")
-	execute_process (
-	  COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	  RESULT_VARIABLE GIT_SUBMODULE_RESULT
-	  )
-	if (NOT GIT_SUBMODULE_RESULT EQUAL "0")
-	  message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMODULE_RESULT}, please checkout submodules")
-	endif ()
-      endif ()
-    endif ()
-    message("add_subdirectory")
-    add_subdirectory(extern/gFTL)
-  endif ()
-endif()
-
-find_package(GFTL_SHARED QUIET)
-if (NOT GFTL_SHARED_FOUND)
-  if (NOT TARGET gftl-shared)
-    # from https://cliutils.gitlab.io/modern-cmake/chapters/projects/submodule.html
-    find_package(Git QUIET)
-    if (GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
-      option (GIT_SUBMODULE "Check submodules during build" ON)
-      if (GIT_SUBMODULE)
-	message (STATUS "Submodule update")
-	execute_process (
-	  COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
-	  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	  RESULT_VARIABLE GIT_SUBMODULE_RESULT
-	  )
-	if (NOT GIT_SUBMODULE_RESULT EQUAL "0")
-	  message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMODULE_RESULT}, please checkout submodules")
-	endif ()
-      endif ()
-    endif ()
-    message("add_subdirectory")
-    add_subdirectory(extern/gFTL-shared)
-  endif ()
-endif()
-
+add_subdirectory(extern)
 add_subdirectory (src)
-if (PFUNIT)
-  enable_testing()
-  add_custom_target(tests COMMAND ${CMAKE_CTEST_COMMAND})
 
+if (PFUNIT)
+  if (NOT TARGET tests)
+    enable_testing()
+    add_custom_target(tests COMMAND ${CMAKE_CTEST_COMMAND})
+  endif ()
   add_subdirectory (tests)
 endif ()
 
@@ -73,3 +36,9 @@ if (examples)
   add_subdirectory(Examples)
 endif()
 
+# find_package() support
+configure_file(FARGPARSE-config-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config-version.cmake @ONLY)
+configure_file(FARGPARSE-config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config.cmake @ONLY)
+install (
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config-version.cmake
+  DESTINATION "share/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
