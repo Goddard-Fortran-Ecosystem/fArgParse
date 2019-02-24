@@ -1,0 +1,5 @@
+# Package configuration file
+
+get_filename_component (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set (PREFIX ${SELF_DIR}/../..)
+include ("${PREFIX}/share/FARGPARSE-@FARGPARSE_VERSION_MAJOR@.@FARGPARSE_VERSION_MINOR@/FARGPARSE.cmake")

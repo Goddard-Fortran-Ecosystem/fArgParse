@@ -1,3 +1,4 @@
+set(CMAKE_Fortran_MODULE_DIRECTORY ${FARGPARSE_BINARY_DIR}/mod)
 
 set(srcs
   AbstractArgParser.F90
@@ -21,27 +22,19 @@ set(srcs
   fParse.F90
   )
 
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod)
-include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
-include_directories(${fArgParse_SOURCE_DIR}/include)
-include_directories(${gFTL_install_dir}/include)
-include_directories(${gFTL-shared_install_dir}/mod)
-
-message("one ${gFTL_install_dir}/include")
-message("two ${gFTL-shared_install_dir}/include")
-
+set (library_dest "lib/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
+set (include_dest "include/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
+set (share_dest "share/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
 
 add_library(fargparse STATIC ${srcs})
-target_link_libraries(fargparse ${gFTL-shared_install_dir}/lib/libgFTL-shared.a)
-
-if (NOT GFTL)
-  add_dependencies(fargparse gFTL)
-endif()
-
-if (NOT GFTL-SHARED)
-  add_dependencies(fargparse gFTL-shared)
-endif()
+target_include_directories (fargparse PUBLIC
+  $<BUILD_INTERFACE:${FARGPARSE_BINARY_DIR}/mod>
+  $<INSTALL_INTERFACE:${include_dest}>
+  )
+target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
+target_link_libraries(fargparse gftl gftl-shared)
 
 
-install (TARGETS fargparse DESTINATION lib)
-install (DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include)
+install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${include_dest})
+install (TARGETS fargparse EXPORT FARGPARSE DESTINATION "${library_dest}")
+install (EXPORT FARGPARSE DESTINATION "${share_dest}")
