@@ -52,6 +52,7 @@ contains
       p = ArgParser()
       call p%add_argument('--arg', action='store_true')
       options = p%parse_args(arguments)
+
       @assertEqual(1, options%size())
       
    end subroutine test_one_option_with_argument

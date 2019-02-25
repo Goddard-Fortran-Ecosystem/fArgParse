@@ -200,7 +200,6 @@ contains
       
       ! TODO:  Hopefully this is a temporary workaround for ifort 19 beta
       call this%get_defaults(option_values)
-
       ith = 0
       
       iter = arguments%begin()
@@ -399,13 +398,15 @@ contains
 
       class (BaseAction), pointer :: opt
       type (ActionVectorIterator) :: option_iter
+      class(*), pointer :: q
 
       option_iter = this%optionals%begin()
       do while (option_iter /= this%optionals%end())
          opt => option_iter%get()
          if (opt%has_default()) then
+            q => opt%get_default()
             ! workaround for gfortran
-            select type (q => opt%get_default())
+            select type (q)
             type is (String)
                call option_values%insert(opt%get_destination(), q)
             class default

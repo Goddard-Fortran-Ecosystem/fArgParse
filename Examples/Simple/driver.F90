@@ -1,5 +1,5 @@
 program main
-   use fParse
+   use fArgParse
    implicit none
    
    type (ArgParser) :: p
