@@ -33,7 +33,7 @@ target_include_directories (fargparse PUBLIC
   $<INSTALL_INTERFACE:${include_dest}>
   )
 target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
-target_link_libraries(fargparse ext)
+target_link_libraries(fargparse external-fargparse)
 
 
 install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${include_dest})
