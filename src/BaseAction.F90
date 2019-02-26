@@ -173,7 +173,10 @@ contains
       class(*), pointer :: default
       class(BaseAction), target, intent(in) :: this
 
-      select type (q => this%default)
+      class(*), pointer :: q
+
+      q => this%default
+      select type (q)
       type is (String)
          default => q
       class default

@@ -19,7 +19,8 @@ set(srcs
   KeywordEnforcer.F90
   None.F90
 
-  fParse.F90
+  # The package
+  fArgParse.F90
   )
 
 set (library_dest "lib/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
@@ -32,7 +33,7 @@ target_include_directories (fargparse PUBLIC
   $<INSTALL_INTERFACE:${include_dest}>
   )
 target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
-target_link_libraries(fargparse gftl gftl-shared)
+target_link_libraries(fargparse external-fargparse)
 
 
 install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${include_dest})
