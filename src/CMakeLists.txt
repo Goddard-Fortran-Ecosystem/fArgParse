@@ -23,19 +23,17 @@ set(srcs
   fArgParse.F90
   )
 
-set (library_dest "lib/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
-set (include_dest "include/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
-set (share_dest "share/FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
+set (dest "FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}")
 
 add_library(fargparse STATIC ${srcs})
 target_include_directories (fargparse PUBLIC
   $<BUILD_INTERFACE:${FARGPARSE_BINARY_DIR}/mod>
-  $<INSTALL_INTERFACE:${include_dest}>
+  $<INSTALL_INTERFACE:${dest}/include>
   )
 target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
 target_link_libraries(fargparse external-fargparse)
 
 
-install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${include_dest})
-install (TARGETS fargparse EXPORT FARGPARSE DESTINATION "${library_dest}")
-install (EXPORT FARGPARSE DESTINATION "${share_dest}")
+install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${dest}/include)
+install (TARGETS fargparse EXPORT FARGPARSE DESTINATION "${dest}/lib")
+install (EXPORT FARGPARSE DESTINATION "${dest}/cmake")
