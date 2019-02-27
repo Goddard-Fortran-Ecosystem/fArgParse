@@ -37,8 +37,8 @@ if (examples)
 endif()
 
 # find_package() support
-configure_file(FARGPARSE-config-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config-version.cmake @ONLY)
-configure_file(FARGPARSE-config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config.cmake @ONLY)
+configure_file(FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)
+configure_file(FARGPARSEConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake @ONLY)
 install (
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE-config-version.cmake
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake
   DESTINATION "FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}/cmake")
