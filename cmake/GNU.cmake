@@ -11,4 +11,3 @@ set(CMAKE_Fortran_FLAGS "-g ${cpp} ${traceback} -ffree-line-length-512 ${check_a
 
 
 add_definitions(-D_GNU)
-#add_definitions(-D__GFORTRAN__)

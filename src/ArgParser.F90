@@ -170,9 +170,13 @@ contains
       class (ArgParser), intent(in) :: this
       class (KeywordEnforcer), optional, intent(in) :: unused
       type (StringVector), optional, intent(out) :: unprocessed
-
+      type (StringVector), target :: arguments
+      
       _UNUSED_DUMMY(unused)
-      option_values = this%parse_args(get_command_line_arguments(), unprocessed=unprocessed)
+
+      arguments = get_command_line_arguments()
+      ! Workaround for gfortran-8.2  - default assignment for complex maps is broken?
+      call option_values%deepCopy(this%parse_args(arguments, unprocessed=unprocessed))
       
    end function parse_args_command_line
 
@@ -198,10 +202,9 @@ contains
 
       _UNUSED_DUMMY(unused)
       
-      ! TODO:  Hopefully this is a temporary workaround for ifort 19 beta
       call this%get_defaults(option_values)
       ith = 0
-      
+
       iter = arguments%begin()
       do while (iter /= arguments%end())
          argument => iter%get()
@@ -393,7 +396,7 @@ contains
    end subroutine handle_option
 
    subroutine get_defaults(this, option_values)
-      type (StringUnlimitedMap) :: option_values
+      type (StringUnlimitedMap), intent(out) :: option_values
       class (ArgParser), intent(in) :: this
 
       class (BaseAction), pointer :: opt
