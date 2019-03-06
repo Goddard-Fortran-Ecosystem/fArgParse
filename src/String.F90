@@ -9,6 +9,9 @@ module fp_String
      character(:), allocatable :: string
   end type String
 
+  ! ifort-18 fails some use cases unless we provide an explicit copy
+  ! constructor.  (Which in turn appears to drive the need for a
+  ! workaround for the workaround for gfortran 8.2)
   interface String
      module procedure new_string
   end interface String
@@ -20,6 +23,7 @@ contains
       character(*), intent(in) :: s
       new_string%string = s
    end function new_string
+
 
 end module fp_String
 
