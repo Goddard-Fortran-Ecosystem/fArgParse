@@ -35,12 +35,18 @@ module fp_ArgParser
       logical :: is_initialized = .false.
       character(:), allocatable :: program_name
    contains
+      procedure :: initialize
       generic :: add_argument => add_argument_as_action
       generic :: add_argument => add_argument_as_attributes
-      generic :: parse_args => parse_args_command_line, parse_args_args
 
+      generic :: parse_args => parse_args_command_line, parse_args_args
       procedure :: parse_args_command_line
       procedure :: parse_args_args
+
+      generic :: parse_args_kludge => parse_args_kludge_command_line, parse_args_kludge_args
+      procedure :: parse_args_kludge_command_line
+      procedure :: parse_args_kludge_args
+      
 
       procedure :: add_argument_as_action
       procedure :: add_argument_as_attributes
@@ -65,22 +71,35 @@ contains
 
 
    function new_argParser_empty(program_name) result(parser)
-      use fp_CommandLineArguments
       type (ArgParser) :: parser
       character(*), optional, intent(in) :: program_name
 
-      call parser%initialize_registry()
+      call parser%initialize(program_name)
+
+   end function new_argParser_empty
+
+   ! This procedure is a kludge for ifort 18.0.x.  The compiler does
+   ! not correctly return a Parser object using the type constructor
+   ! above, so we use a subroutine argument here to side-step the issue.
+   ! Annoying.   It is apparently fixed in 19.0.1 and 19.0.2, so no need 
+   ! to submit a reproducer to Intel.  Delete someday?
+   subroutine initialize(this, program_name)
+      use fp_CommandLineArguments
+      class (ArgParser), intent(out) :: this
+      character(*), optional, intent(in) :: program_name
+
+      call this%initialize_registry()
 
       if (present(program_name)) then
-         parser%program_name = program_name
+         this%program_name = program_name
       else
-         parser%program_name = get_command_line_argument(0)
+         this%program_name = get_command_line_argument(0)
       end if
 
       ! Help is added by default.
-      call parser%add_argument('-h', '--help', action='help', help='This message.')
+      call this%add_argument('-h', '--help', action='help', help='This message.')
 
-   end function new_argParser_empty
+   end subroutine initialize
 
    subroutine initialize_registry(this)
       use fp_HelpAction
@@ -130,7 +149,7 @@ contains
         & unused, &                                    ! Keyword enforcer
         & action, type, n_arguments, dest, default, const, help) ! Keyword arguments
 
-      class (ArgParser), intent(inout) :: this
+      class (ArgParser), target, intent(inout) :: this
       character(*), intent(in) :: opt_string_1
       character(*), optional, intent(in) :: opt_string_2
       character(*), optional, intent(in) :: opt_string_3
@@ -160,7 +179,7 @@ contains
       call arg%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
            & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
       call this%add_argument(arg)
-      
+
    end subroutine add_argument_as_attributes
 
 
@@ -175,9 +194,8 @@ contains
       _UNUSED_DUMMY(unused)
 
       arguments = get_command_line_arguments()
-      ! Workaround for gfortran-8.2  - default assignment for complex maps is broken?
-      call option_values%deepCopy(this%parse_args(arguments, unprocessed=unprocessed))
-      
+      option_values = this%parse_args(arguments, unprocessed=unprocessed)
+
    end function parse_args_command_line
 
 
@@ -245,6 +263,89 @@ contains
       end do
 
    end function parse_args_args
+
+   subroutine parse_args_kludge_command_line(this, option_values, unused, unprocessed)
+     use fp_CommandLineArguments
+      class (ArgParser), intent(in) :: this
+      type (StringUnlimitedMap), intent(out) :: option_values
+      class (KeywordEnforcer), optional, intent(in) :: unused
+      type (StringVector), optional, intent(out) :: unprocessed
+      type (StringVector), target :: arguments
+      
+      _UNUSED_DUMMY(unused)
+
+      arguments = get_command_line_arguments()
+      ! Workaround for gfortran-8.2  - default assignment for complex maps is broken?
+      call this%parse_args_kludge(option_values, arguments, unprocessed=unprocessed)
+!!$      call option_values%deepCopy(this%parse_args(arguments, unprocessed=unprocessed))
+      
+   end subroutine parse_args_kludge_command_line
+
+
+   subroutine parse_args_kludge_args(this, option_values, arguments, unused, unprocessed)
+      class (ArgParser), intent(in) :: this
+      type (StringUnlimitedMap), intent(out) :: option_values
+      type (StringVector), target, intent(in) :: arguments
+      class (KeywordEnforcer), optional, intent(in) :: unused
+      type (StringVector), optional, intent(out) :: unprocessed
+
+      type (StringVectorIterator) :: iter
+      character(:), pointer :: argument
+
+      class(BaseAction), pointer :: opt
+      class (BaseAction), pointer :: act
+      integer :: arg_value_int
+      real :: arg_value_real
+      character(:), target, allocatable :: embedded_value
+      class(*), allocatable :: args
+
+      integer :: ith
+
+      _UNUSED_DUMMY(unused)
+      
+      call this%get_defaults(option_values)
+      ith = 0
+
+      iter = arguments%begin()
+      do while (iter /= arguments%end())
+         argument => iter%get()
+         opt => this%get_option_matching(argument, embedded_value)
+         if (associated(opt)) then ! argument corresponds to an optional argument
+
+            call this%handle_option(opt, argument, iter, arguments%end(), embedded_value, args)
+
+            select type (args)
+            type is (String)
+               call opt%act(option_values, this, args%string)
+            class default
+               call opt%act(option_values, this, args)
+            end select
+            deallocate(args)
+
+            deallocate(embedded_value)
+            if (iter == arguments%end()) exit
+
+         else ! is positional
+            ith = ith + 1
+            act => this%positionals%at(ith)
+            select case (act%get_type())
+            case ('string')
+               call option_values%insert(act%get_destination(), argument)
+            case ('integer')
+               read(argument,*) arg_value_int
+               call option_values%insert(act%get_destination(), arg_value_int)
+            case ('real')
+               read(argument,*) arg_value_real
+               call option_values%insert(act%get_destination(), arg_value_real)
+            end select
+            if (present(unprocessed)) call unprocessed%push_back(argument)
+         end if
+         
+
+         call iter%next()
+      end do
+
+   end subroutine parse_args_kludge_args
 
    subroutine handle_option(this, action, argument, iter, end, embedded_value, args)
      class(ArgParser), intent(in) :: this
@@ -397,12 +498,12 @@ contains
 
    subroutine get_defaults(this, option_values)
       type (StringUnlimitedMap), intent(out) :: option_values
-      class (ArgParser), intent(in) :: this
+      class (ArgParser), target, intent(in) :: this
 
       class (BaseAction), pointer :: opt
       type (ActionVectorIterator) :: option_iter
       class(*), pointer :: q
-
+      
       option_iter = this%optionals%begin()
       do while (option_iter /= this%optionals%end())
          opt => option_iter%get()
