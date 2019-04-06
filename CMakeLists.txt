@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 project (FARGPARSE
-  VERSION 0.8
+  VERSION 0.9
   LANGUAGES Fortran)
 
 # Most users of this software do not (should not?) have permissions to
@@ -37,8 +37,16 @@ if (examples)
 endif()
 
 # find_package() support
-configure_file(FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)
-configure_file(FARGPARSEConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake @ONLY)
+configure_file (FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)
+configure_file (FARGPARSEConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake @ONLY)
+configure_file (FARGPARSE.mk.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk @ONLY)
+
+set (top_dir FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR})
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake
-  DESTINATION "FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR}/cmake")
+  DESTINATION "${top_dir}/cmake")
+install (
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk
+  DESTINATION "${top_dir}/include")
+
+message("GFTL_SHARED_DIR ${GFTL_SHARED_DIR}")
