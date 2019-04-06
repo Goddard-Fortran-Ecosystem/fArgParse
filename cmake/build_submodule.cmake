@@ -7,7 +7,7 @@ macro (build_submodule submodule)
   set(multiValueArgs)
   cmake_parse_arguments(build_submodule "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-  find_package(${build_submodule_PROJECT} QUIET)
+  find_package(${build_submodule_PROJECT} REQUIRED)
 
   if (NOT ${project}_FOUND)
     if (NOT TARGET ${build_submodule_TARGET})
