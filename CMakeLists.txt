@@ -39,12 +39,16 @@ endif()
 # find_package() support
 configure_file (FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)
 configure_file (FARGPARSEConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake @ONLY)
-configure_file (FARGPARSE.mk.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk @ONLY)
 
 set (top_dir FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR})
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake
   DESTINATION "${top_dir}/cmake")
+
+# The following is needed for external projects using *nix make when
+# parent project builds fArgParse as a subproject.
+set (FARGPARSE_TOP_DIR "${CMAKE_INSTALL_PREFIX}/${top_dir}" CACHE PATH "")
+configure_file (FARGPARSE.mk.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk @ONLY)
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk
   DESTINATION "${top_dir}/include")
