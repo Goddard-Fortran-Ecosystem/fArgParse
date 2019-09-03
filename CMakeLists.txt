@@ -18,23 +18,30 @@ if(NOT found)
   message( FATAL_ERROR "Unrecognized Fortran compiler. Please use ifort, gfortran, NAG, PGI, or XL.")
 endif()
 
-# Need pFUnit if want to build tests
-set(PFUNIT "" CACHE PATH "(optional) path to installed testing framework")
-
 add_subdirectory(extern)
 add_subdirectory (src)
-
-if (PFUNIT)
-  if (NOT TARGET tests)
-    enable_testing()
-    add_custom_target(tests COMMAND ${CMAKE_CTEST_COMMAND})
-  endif ()
-  add_subdirectory (tests)
-endif ()
 
 if (examples)
   add_subdirectory(Examples)
 endif()
+
+find_package (PFUNIT 4.0.1 QUIET)
+if (PFUNIT_FOUND)
+  project (GFTL-TEST
+    VERSION ${GFTL_VERSION}
+    LANGUAGES Fortran
+    )
+
+  set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${GFTL_SOURCE_DIR}/cmake_utils")
+  include (${CMAKE_Fortran_COMPILER_ID} RESULT_VARIABLE found)
+
+  enable_testing()
+  if (NOT TARGET (tests))
+    add_custom_target(tests COMMAND ${CMAKE_CTEST_COMMAND})
+  endif ()
+  
+  add_subdirectory(tests)
+endif ()
 
 # find_package() support
 configure_file (FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)

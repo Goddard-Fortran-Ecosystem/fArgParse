@@ -1,9 +1,9 @@
 module Test_BaseAction
    use fp_BaseAction
-   use pFUnit_mod
+   use funit
    implicit none
 
-   @suite(name='BaseAction_suite')
+!   @suite(name='BaseAction_suite')
 
 contains
 

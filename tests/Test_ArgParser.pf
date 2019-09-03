@@ -1,5 +1,5 @@
 module Test_ArgParser
-   use pFUnit_mod
+   use funit
    use fp_ArgParser
    use fp_Cast
    use fp_ErrorCodes
@@ -9,7 +9,7 @@ module Test_ArgParser
    use gFTL_RealVector
    implicit none
 
-   @suite(name='ArgParser_suite')
+!   @suite(name='ArgParser_suite')
 
 
 

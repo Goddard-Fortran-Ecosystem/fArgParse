@@ -1,10 +1,10 @@
 module Test_Cast
-   use pFUnit_mod
+   use funit
    use fp_Cast
    use fp_ErrorCodes
    implicit none
 
-   @suite(name='Cast_suite')
+!   @suite(name='Cast_suite')
 
 contains
 
