@@ -37,8 +37,8 @@ matrix:
       - os: osx
         osx_image: xcode9.4
         env:
-           - FC='gfortran-8'
-           - BREW='gcc@8'
+           - FC='gfortran-7'
+           - BREW='gcc@7'
            - BREW_UP='cmake'
            - CACHE_NAME=osx-gcc8
       - os: osx
