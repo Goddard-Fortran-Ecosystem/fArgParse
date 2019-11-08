@@ -7,11 +7,10 @@ module fArgParse
    use gFTL_IntegerVector
    use gFTL_RealVector
    implicit none
+   private
 
    public :: ArgParser
-   public :: cast
    public :: StringUnlimitedMap
-   public :: get_command_line_arguments
-   public :: get_command_line_argument
+   public :: cast
 
 end module fArgParse
