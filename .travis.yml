@@ -35,7 +35,7 @@ matrix:
         env:
            - FC='gfortran-9'
       - os: osx
-        osx_image: xcode9.4
+        osx_image: xcode10.3
         env:
            - FC='gfortran-7'
            - BREW='gcc@7'
