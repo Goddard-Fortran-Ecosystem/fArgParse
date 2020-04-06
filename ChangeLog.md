@@ -1,7 +1,7 @@
 # Change log
 
 ## Unreleased
-## [0.9.3] - 2020-03-06
+## [0.9.3] - 2020-04-06
 
 ### Changed
 - Updated gFTL to latest
