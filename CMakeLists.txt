@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
 project (FARGPARSE
-  VERSION 0.9.1
+  VERSION 0.9.4
   LANGUAGES Fortran)
 
 # Most users of this software do not (should not?) have permissions to
