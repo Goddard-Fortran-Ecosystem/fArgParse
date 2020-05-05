@@ -244,18 +244,21 @@ contains
 
          else ! is positional
             ith = ith + 1
-            act => this%positionals%at(ith)
-            select case (act%get_type())
-            case ('string')
-               call option_values%insert(act%get_destination(), argument)
-            case ('integer')
-               read(argument,*) arg_value_int
-               call option_values%insert(act%get_destination(), arg_value_int)
-            case ('real')
-               read(argument,*) arg_value_real
-               call option_values%insert(act%get_destination(), arg_value_real)
-            end select
-            if (present(unprocessed)) call unprocessed%push_back(argument)
+            if (ith <= this%positionals%size()) then
+               act => this%positionals%at(ith)
+               select case (act%get_type())
+               case ('string')
+                  call option_values%insert(act%get_destination(), argument)
+               case ('integer')
+                  read(argument,*) arg_value_int
+                  call option_values%insert(act%get_destination(), arg_value_int)
+               case ('real')
+                  read(argument,*) arg_value_real
+                  call option_values%insert(act%get_destination(), arg_value_real)
+               end select
+            else
+               if (present(unprocessed)) call unprocessed%push_back(argument)
+            end if
          end if
          
 
@@ -327,18 +330,21 @@ contains
 
          else ! is positional
             ith = ith + 1
-            act => this%positionals%at(ith)
-            select case (act%get_type())
-            case ('string')
-               call option_values%insert(act%get_destination(), argument)
-            case ('integer')
-               read(argument,*) arg_value_int
-               call option_values%insert(act%get_destination(), arg_value_int)
-            case ('real')
-               read(argument,*) arg_value_real
-               call option_values%insert(act%get_destination(), arg_value_real)
-            end select
-            if (present(unprocessed)) call unprocessed%push_back(argument)
+            if (ith <= this%positionals%size()) then
+               act => this%positionals%at(ith)
+               select case (act%get_type())
+               case ('string')
+                  call option_values%insert(act%get_destination(), argument)
+               case ('integer')
+                  read(argument,*) arg_value_int
+                  call option_values%insert(act%get_destination(), arg_value_int)
+               case ('real')
+                  read(argument,*) arg_value_real
+                  call option_values%insert(act%get_destination(), arg_value_real)
+               end select
+            else
+               if (present(unprocessed)) call unprocessed%push_back(argument)
+            end if
          end if
          
 

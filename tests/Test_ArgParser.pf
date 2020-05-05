@@ -576,4 +576,25 @@ contains
        
     end subroutine test_pfunit_use_case
 
+    ! Reproducer for Issue #61
+    @test
+    subroutine test_unprocessed_argument
+      use fp_CommandLineArguments
+      use fp_String
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+      class(*), pointer :: opt
+
+      p = ArgParser()
+
+      call p%add_argument('-d', '--debug', '--verbose', action='store_true', &
+           & help='make output more verbose')
+
+      ! Crashes before fix
+      call arguments%push_back('-not-a-valid-argument')
+      options = p%parse_args(arguments)
+      
+    end subroutine test_unprocessed_argument
+
 end module Test_ArgParser

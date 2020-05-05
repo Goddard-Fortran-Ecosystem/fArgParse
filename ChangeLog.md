@@ -9,20 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [0.9.4] 2020-05-05
-
 ### Changed
 - Modified defalut name for Pair in Map container
   (Workaround for XLF bug.)
 - Updated gFTL/gFTL-shared  
-	
 
-## [0.9.2] 2020-05-05
+## [0.9.3] - 2020-04-06
+
+### Changed
+- Updated gFTL to latest
+	
+## [0.9.2] - 2019-12-19
+
+### Changed
+- Updated gFTL to latest
 
 ### Fixed
-- bug with extra arguments
+- Bug fix for extra arguments.
 
+## [0.9.1] - 2019-11-08
 
-## [0.9.1] 2019-11-08
+### Fixed
 - Workaround for compiler hang in ifort 19.0.3
 - Updated gFTL for memory leak workaround in ifort 18
 

@@ -27,8 +27,8 @@ endif()
 
 find_package (PFUNIT 4.0.1 QUIET)
 if (PFUNIT_FOUND)
-  project (GFTL-TEST
-    VERSION ${GFTL_VERSION}
+  project (FARGPARSE_-TEST
+    VERSION ${FARGPARSE_VERSION}
     LANGUAGES Fortran
     )
 
@@ -36,7 +36,7 @@ if (PFUNIT_FOUND)
   include (${CMAKE_Fortran_COMPILER_ID} RESULT_VARIABLE found)
 
   enable_testing()
-  if (NOT TARGET (tests))
+  if (NOT TARGET tests)
     add_custom_target(tests COMMAND ${CMAKE_CTEST_COMMAND})
   endif ()
   
