@@ -369,7 +369,9 @@ contains
 
      integer :: arg_value_int
      real :: arg_value_real
-     
+!!$     class(*), allocatable :: n_arguments
+!!$
+!!$     n_arguments = action%get_n_arguments()
      select type (n_arguments => action%get_n_arguments())
      type is (t_None) ! Single value collected 
         if (embedded_value /= '') then

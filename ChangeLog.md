@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] 2020-08-24
+
+Tempting fate by calling this the 1.0 release.
+
+### Fixed
+- Reintroduced some workarounds for older gfortran and intel
+  compilers.  
+	
 ## [0.9.5] 2020-05-12
 ### Changed
 - Update submodules (correctly this time)

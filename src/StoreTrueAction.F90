@@ -47,7 +47,7 @@ contains
       if (present(default)) then
          default_ = default
       else
-         default_ = .false.
+         allocate(default_, source=.false.)
       end if
 
       call this%StoreConstAction%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
