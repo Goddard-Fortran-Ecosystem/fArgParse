@@ -564,7 +564,11 @@ contains
            & dest='n_skip', action='store', default=0, &
            & help='skip the first n_skip tests; only used with RemoteRunner')
 
+#ifdef __GFORTRAN__
+      call p%parse_args_kludge(option_values=options, arguments=arguments)
+#else
       options = p%parse_args(arguments)
+#endif
 
       opt => options%at('runner')
       select type (opt)
