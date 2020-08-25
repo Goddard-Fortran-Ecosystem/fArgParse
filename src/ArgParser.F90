@@ -369,10 +369,14 @@ contains
 
      integer :: arg_value_int
      real :: arg_value_real
-!!$     class(*), allocatable :: n_arguments
-!!$
-!!$     n_arguments = action%get_n_arguments()
+
+#ifdef __INTEL_COMPILER
+     class(*), allocatable :: n_arguments
+     n_arguments = action%get_n_arguments()
+     select type (n_arguments)
+#else
      select type (n_arguments => action%get_n_arguments())
+#endif
      type is (t_None) ! Single value collected 
         if (embedded_value /= '') then
            argument => embedded_value
@@ -426,7 +430,7 @@ contains
         ! Cases: '?','*', and '+'
         ! TODO: aggregation should terminate when a new optional
         ! arguemnt is encountered
-        select case(n_arguments)
+        select case (n_arguments)
         case ('?')
            if (embedded_value /= '') then ! value is embedded in token
               argument => embedded_value
