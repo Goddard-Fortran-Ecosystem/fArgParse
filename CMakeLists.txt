@@ -18,6 +18,8 @@ if(NOT found)
   message( FATAL_ERROR "Unrecognized Fortran compiler. Please use ifort, gfortran, NAG, PGI, or XL.")
 endif()
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 add_subdirectory(extern)
 add_subdirectory (src)
 
