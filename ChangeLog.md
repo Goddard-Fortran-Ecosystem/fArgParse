@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] 2020-02-10
+
+### Changed
+- Added flag for position independent code
+
 ## [1.0.1] 2020-08-24
 - Previous commit missed important compiler workaround
   (masked by subtle compiler issue in gFTL)
