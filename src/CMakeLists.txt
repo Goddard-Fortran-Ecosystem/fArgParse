@@ -31,9 +31,8 @@ target_include_directories (fargparse PUBLIC
   $<INSTALL_INTERFACE:${dest}/include>
   )
 target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
-target_link_libraries(fargparse external-fargparse)
+target_link_libraries(fargparse PUBLIC gftl gftl-shared)
 
 
 install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${dest}/include)
 install (TARGETS fargparse EXPORT FARGPARSE DESTINATION "${dest}/lib")
-install (EXPORT FARGPARSE DESTINATION "${dest}/cmake")
