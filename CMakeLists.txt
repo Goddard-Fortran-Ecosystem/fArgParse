@@ -46,8 +46,14 @@ if (PFUNIT_FOUND)
 endif ()
 
 # find_package() support
-configure_file (FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)
-configure_file (FARGPARSEConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake @ONLY)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(FARGPARSEConfig.cmake.in FARGPARSEConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake
+  )
+write_basic_package_version_file(FARGPARSEConfig-version.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY SameMajorVersion
+  )
 
 set (top_dir FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR})
 install (

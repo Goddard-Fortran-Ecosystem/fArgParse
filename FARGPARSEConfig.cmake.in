@@ -1,6 +1,5 @@
 # Package configuration file
 
-get_filename_component (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set (PREFIX ${SELF_DIR}/../..)
-set (FARGPARSE_TOP_DIR ${PREFIX}/FARGPARSE-@FARGPARSE_VERSION_MAJOR@.@FARGPARSE_VERSION_MINOR@ CACHE PATH "")
-include ("${FARGPARSE_TOP_DIR}/cmake/FARGPARSE.cmake")
+@PACKAGE_INIT@
+
+include ("${CMAKE_CURRENT_LIST_DIR}/FARGPARSETargets.cmake")
