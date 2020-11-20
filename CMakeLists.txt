@@ -71,7 +71,7 @@ install (
 install(EXPORT FARGPARSE
   FILE FARGPARSETargets.cmake
   NAMESPACE FARGPARSE::
-  DESTINATION "${top_dir}/cmake/FARGPARSE"
+  DESTINATION "${top_dir}/cmake"
   )
 export(EXPORT FARGPARSE
   FILE "${CMAKE_CURRENT_BINARY_DIR}/FARGPARSETargets.cmake"
