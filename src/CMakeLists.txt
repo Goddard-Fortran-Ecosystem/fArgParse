@@ -31,6 +31,7 @@ target_include_directories (fargparse PUBLIC
   $<INSTALL_INTERFACE:${dest}/include>
   )
 target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
+add_library(FARGPARSE::fargparse ALIAS fargparse)
 
 include(build_submodule)
 build_submodule(../extern/gFTL PROJECT GFTL TARGET GFTL::gftl)
