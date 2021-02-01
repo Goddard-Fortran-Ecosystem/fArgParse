@@ -20,7 +20,6 @@ endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_subdirectory(extern)
 add_subdirectory (src)
 
 if (examples)
