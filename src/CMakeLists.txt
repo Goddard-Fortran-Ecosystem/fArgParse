@@ -31,9 +31,14 @@ target_include_directories (fargparse PUBLIC
   $<INSTALL_INTERFACE:${dest}/include>
   )
 target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
-target_link_libraries(fargparse external-fargparse)
+add_library(FARGPARSE::fargparse ALIAS fargparse)
+
+include(build_submodule)
+build_submodule(../extern/gFTL PROJECT GFTL TARGET GFTL::gftl)
+build_submodule(../extern/gFTL-shared PROJECT GFTL_SHARED TARGET GFTL_SHARED::gftl-shared)
+
+target_link_libraries(fargparse PUBLIC GFTL::gftl GFTL_SHARED::gftl-shared)
 
 
 install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${dest}/include)
 install (TARGETS fargparse EXPORT FARGPARSE DESTINATION "${dest}/lib")
-install (EXPORT FARGPARSE DESTINATION "${dest}/cmake")

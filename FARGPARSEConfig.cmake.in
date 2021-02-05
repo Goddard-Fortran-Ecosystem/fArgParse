@@ -1,6 +1,33 @@
 # Package configuration file
 
-get_filename_component (SELF_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-set (PREFIX ${SELF_DIR}/../..)
-set (FARGPARSE_TOP_DIR ${PREFIX}/FARGPARSE-@FARGPARSE_VERSION_MAJOR@.@FARGPARSE_VERSION_MINOR@ CACHE PATH "")
-include ("${FARGPARSE_TOP_DIR}/cmake/FARGPARSE.cmake")
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Enables the use of the build directory directly, without having to
+# specify the paths for the external packages as well
+if (EXISTS "@CMAKE_BINARY_DIR@/extern/gFTL")
+  list(APPEND CMAKE_PREFIX_PATH "@CMAKE_BINARY_DIR@/extern/gFTL")
+elseif (EXISTS "@GFTL_ROOT@")
+  set(GFTL_ROOT "@GFTL_ROOT@")
+elseif (EXISTS "@GFTL_DIR@")
+  set(GFTL_ROOT "@GFTL_DIR@")
+elseif (EXISTS "@GFTL_TOP_DIR@")
+  set(GFTL_ROOT "@GFTL_TOP_DIR@")
+endif()
+
+find_dependency(GFTL)
+
+if (EXISTS "@CMAKE_BINARY_DIR@/extern/gFTL-shared")
+  list(APPEND CMAKE_PREFIX_PATH "@CMAKE_BINARY_DIR@/extern/gFTL-shared")
+elseif (EXISTS "@GFTL_SHARED_ROOT@")
+  set(GFTL_SHARED_ROOT "@GFTL_SHARED_ROOT@")
+elseif (EXISTS "@GFTL_SHARED_DIR@")
+  set(GFTL_SHARED_ROOT "@GFTL_SHARED_DIR@")
+elseif (EXISTS "@GFTL_SHARED_TOP_DIR@")
+  set(GFTL_SHARED_ROOT "@GFTL_SHARED_TOP_DIR@")
+endif()
+
+find_dependency(GFTL_SHARED)
+
+include ("${CMAKE_CURRENT_LIST_DIR}/FARGPARSETargets.cmake")
