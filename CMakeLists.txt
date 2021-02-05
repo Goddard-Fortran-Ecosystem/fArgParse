@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
 
 project (FARGPARSE
   VERSION 1.0.3
@@ -20,7 +20,6 @@ endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-add_subdirectory(extern)
 add_subdirectory (src)
 
 if (examples)
@@ -46,8 +45,14 @@ if (PFUNIT_FOUND)
 endif ()
 
 # find_package() support
-configure_file (FARGPARSEConfig-version.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake @ONLY)
-configure_file (FARGPARSEConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake @ONLY)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(FARGPARSEConfig.cmake.in FARGPARSEConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake
+  )
+write_basic_package_version_file(FARGPARSEConfig-version.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY SameMajorVersion
+  )
 
 set (top_dir FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR})
 install (
@@ -62,3 +67,12 @@ install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk
   DESTINATION "${top_dir}/include")
 
+install(EXPORT FARGPARSE
+  FILE FARGPARSETargets.cmake
+  NAMESPACE FARGPARSE::
+  DESTINATION "${top_dir}/cmake"
+  )
+export(EXPORT FARGPARSE
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/FARGPARSETargets.cmake"
+  NAMESPACE FARGPARSE::
+  )
