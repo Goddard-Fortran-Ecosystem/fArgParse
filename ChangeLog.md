@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] 2021-02-06
+
+### Added
+
+- Improved ability to embed within other projects.
+
+### Changed
+
+- Now uses CMake namespaces.   Upstream projects should now link against
+  `FARGPARSE::fargparse` insead of just `fargparse'.   Technically this is a 
+  not backward compatible, but arguably is just fixing in an incorrect use of 
+  CMake.
+  
+
+## [1.0.3] 2021-01-31
+
+### Fixed
+
+Updated submodules and made cmake consistent.
+
 ## [1.0.2] 2020-02-10
 
 ### Changed
