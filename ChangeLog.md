@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Automatic build of the gFTL-shared submodule now happens if
+  GFTL_SHARED::gftl-shared isn't already defined.
+- Build setting BUILD_TESTING must be turned on to build fArgParse unit tests.
+
 ## [1.1.0] 2021-02-06
 
 ### Added
