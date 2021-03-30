@@ -52,6 +52,7 @@ jobs:
       - name: Build Tests
         run: |
           cd build
+          cmake . -DBUILD_TESTING=TRUE
           make -j$(nproc) tests
       - name: Run Tests
         run: |
