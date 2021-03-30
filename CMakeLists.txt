@@ -26,8 +26,8 @@ if (examples)
   add_subdirectory(Examples)
 endif()
 
-find_package (PFUNIT 4.0.1 QUIET)
-if (PFUNIT_FOUND)
+if (BUILD_TESTING)
+  find_package (PFUNIT 4.0.1 REQUIRED)
   project (FARGPARSE_-TEST
     VERSION ${FARGPARSE_VERSION}
     LANGUAGES Fortran
