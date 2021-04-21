@@ -13,10 +13,9 @@ jobs:
 
     env:
       FC: ${{ matrix.compiler }}
-      LANGUAGE: en_US.UTF-8
-      LC_ALL: en_US.UTF-8
-      LANG: en_US.UTF-8
-      LC_TYPE: en_US.UTF-8
+      OMPI_ALLOW_RUN_AS_ROOT: 1
+      OMPI_ALLOW_RUN_AS_ROOT_CONFIRM: 1
+      OMPI_MCA_btl_vader_single_copy_mechanism: none
 
     name: ${{ matrix.os }} / ${{ matrix.compiler }}
     steps:
