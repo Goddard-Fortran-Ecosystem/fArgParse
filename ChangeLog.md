@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] 2021-11-15
+
+### Fixed
+
+- Allow GFortran to use longer lines.  (Impacts some upstream use cases.)
+- Updated external modules that contain bugfixes.
+
 ## [1.1.0] 2021-02-06
 
 ### Added
