@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project (FARGPARSE
-  VERSION 1.1.0
+  VERSION 1.1.1
   LANGUAGES Fortran)
 
 # Most users of this software do not (should not?) have permissions to
@@ -40,7 +40,7 @@ if (PFUNIT_FOUND)
   if (NOT TARGET tests)
     add_custom_target(tests COMMAND ${CMAKE_CTEST_COMMAND})
   endif ()
-  
+
   add_subdirectory(tests)
 endif ()
 
