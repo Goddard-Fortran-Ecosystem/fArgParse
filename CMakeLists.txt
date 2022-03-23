@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project (FARGPARSE
+
   VERSION 1.2.0
   LANGUAGES Fortran)
 
