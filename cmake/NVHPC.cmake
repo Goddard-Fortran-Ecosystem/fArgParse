@@ -1,8 +1,9 @@
-# Compiler specific flags for PGI Fortran compiler
+# Compiler specific flags for NVHPC Fortran compiler
 
-set(CMAKE_Fortran_FLAGS_DEBUG  "-g -O0")
+set(traceback "-traceback")
+set(check_all "-Mbounds -Mchkstk")
+
+set(CMAKE_Fortran_FLAGS_DEBUG  "-O0")
 set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
-set(CMAKE_Fortran_FLAGS "-g -O0")
+set(CMAKE_Fortran_FLAGS "-g ${traceback} ${check_all} -Mallocatable=03")
 
-#add_definitions(-D_INTEL)
-#add_definitions(-D__ifort_18)
