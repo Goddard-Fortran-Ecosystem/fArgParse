@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Added gfortran-11
    - Added gfortran-12 (for ubuntu-22.04)
 
+## [1.3.0] 2022-06-02
+
+### Changed
+
+- Updated gFTL-shared submodule version
+
 ## [1.2.0] 2022-03-15
 
 ### Added
