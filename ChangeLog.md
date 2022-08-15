@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Removed gfortran-8
    - Added gfortran-11
    - Added gfortran-12 (for ubuntu-22.04)
+   - Added Intel test (on ubuntu-20.04)
 
 ## [1.3.0] 2022-06-02
 
