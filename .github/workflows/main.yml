@@ -74,8 +74,8 @@ jobs:
           cd build
           make -j$(nproc) tests
       - name: Run Tests Again if failure
-        run: |
         if: failure()
+        run: |
           cd build
           ctest -j1 --output-on-failure --repeat until-pass:4
       - name: Archive log files on failure
