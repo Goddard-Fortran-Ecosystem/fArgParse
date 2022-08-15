@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated CI to include newer macOS and Intel
+
 ## [1.3.1] 2022-09-15
 
 ### Fixed
