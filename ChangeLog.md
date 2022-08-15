@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] 2022-09-15
+
+### Fixed
+
+- Fixed problem where `narguments='+'` was too greedy and absorbed all remaining arguments.  (Issue #105) Reproducing unit test added.
+
 ## [1.3.0] 2022-06-02
 
 ### Changed
