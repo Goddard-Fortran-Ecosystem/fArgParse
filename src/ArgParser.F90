@@ -476,8 +476,13 @@ contains
            if (n_arguments == '+' .and. iter == end) then
               ! TODO: throw exception.  '+' requires at least one value
            end if
+           
            do while (iter /= end)
               argument => iter%get()
+              if (argument(1:1) == '-') then
+                 call iter%previous()
+                 exit
+              end if
               
               select case (action%get_type())
               case ('string')
