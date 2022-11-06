@@ -2,7 +2,7 @@
 module fp_BaseAction
    use fp_AbstractArgParser, only: AbstractAction
    use fp_KeywordEnforcer
-   use gFTL_StringVector
+   use gFTL2_StringVector
    use fp_None
    use fp_String
    implicit none
@@ -81,7 +81,7 @@ contains
          iter = this%option_strings%begin()
          do while (iter /= this%option_strings%end())
             
-            opt_string => iter%get()
+            opt_string => iter%of()
             if (is_long_option_string(opt_string)) then
                this%destination =  opt_string(3:)
                exit
@@ -253,10 +253,10 @@ contains
       line = '  '
       
       iter = this%option_strings%begin()
-      line = line // iter%get()
+      line = line // iter%of()
       call iter%next()
       do while (iter /= this%option_strings%end())
-         line = line // ', ' //iter%get()
+         line = line // ', ' //iter%of()
          call iter%next()
       end do
 
@@ -271,7 +271,7 @@ contains
 
    subroutine act(this, namespace, parser, value, option_string)
       use fp_AbstractArgParser, only: AbstractArgParser
-      use gFTL_stringUnlimitedMap
+      use gFTL2_stringUnlimitedMap
       class (BaseAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
