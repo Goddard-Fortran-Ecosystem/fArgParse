@@ -635,6 +635,10 @@ contains
 
     @test
     subroutine test_choices
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+
       p = ArgParser()
 
       call p%add_argument('-d', type='string', action='store', choices=['A', 'B'])
