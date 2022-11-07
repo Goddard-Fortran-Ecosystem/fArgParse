@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Changed
 
+- Switched to use gFTL v2 and gFTL-shared v2 interfaces This
+  potentially introduces a subtle backward incompatibility as the
+  parse results are technically of a different gFTL map.  Some
+  interfaces of those objects have changed.  If anyone needs a patch,
+  I'll maintain for a short period.
+
 - Updated GitHub Actions
   - OSs
     - Remove macos-10.15
@@ -18,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
    - Added gfortran-11
    - Added gfortran-12 (for ubuntu-22.04)
    - Added Intel test (on ubuntu-20.04)
+
+## [1.3.1] 2022-09-15
+
+### Fixed
+
+- Fixed problem where `narguments='+'` was too greedy and absorbed all remaining arguments.  (Issue #105) Reproducing unit test added.
 
 ## [1.3.0] 2022-06-02
 

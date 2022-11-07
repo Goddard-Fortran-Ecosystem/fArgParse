@@ -15,10 +15,6 @@ module fp_StoreConstAction
       procedure :: act
    end type StoreConstAction
 
-
-
-
-
 contains
 
    subroutine initialize(this, &
@@ -45,9 +41,6 @@ contains
 
       class(*), allocatable :: default_
 
-      _UNUSED_DUMMY(unused)
-      _UNUSED_DUMMY(const)
-
       if (present(default)) then
          default_ = default
       else
@@ -56,18 +49,27 @@ contains
 
       call this%BaseAction%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
            & type=type, n_arguments=0, dest=dest, default=default_, const=const, help=help)
+
+      _UNUSED_DUMMY(unused)
+      _UNUSED_DUMMY(const)
+
    end subroutine initialize
 
 
    subroutine act(this, namespace, parser, value, option_string)
-      use gFTL_StringUnlimitedMap
+      use gFTL2_StringUnlimitedMap
       class (StoreConstAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
       class(*), intent(in) :: value
       character(*), optional, intent(in) :: option_string
 
-      call namespace%insert(this%get_destination(), this%get_const())
+      character(:), allocatable :: dest
+      class(*), pointer :: const
+
+      dest = this%get_destination()
+      const => this%get_const()
+      call namespace%insert(dest, const)
 
    end subroutine act
 

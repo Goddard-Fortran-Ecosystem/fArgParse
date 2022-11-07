@@ -19,10 +19,10 @@ module fp_ArgParser
    use fp_KeywordEnforcer
    use fp_None
    use fp_String
-   use gFTL_IntegerVector
-   use gFTL_RealVector
-   use gFTL_StringVector
-   use gFTL_StringUnlimitedMap
+   use gFTL2_IntegerVector
+   use gFTL2_RealVector
+   use gFTL2_StringVector
+   use gFTL2_StringUnlimitedMap
    implicit none
    private
 
@@ -225,7 +225,7 @@ contains
 
       iter = arguments%begin()
       do while (iter /= arguments%end())
-         argument => iter%get()
+         argument => iter%of()
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
 
@@ -311,7 +311,7 @@ contains
 
       iter = arguments%begin()
       do while (iter /= arguments%end())
-         argument => iter%get()
+         argument => iter%of()
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
 
@@ -383,7 +383,7 @@ contains
         else
            call iter%next()
            ! TODO: should raise exception if there are not more arguments.
-           argument => iter%get()
+           argument => iter%of()
         end if
         select case (action%get_type())
         case ('string')
@@ -404,14 +404,14 @@ contains
            case ('string')
               do i = 1, n_arguments
                  call iter%next()
-                 argument => iter%get()
+                 argument => iter%of()
                  call string_list%push_back(argument)
               end do
               args = string_list
            case ('integer')
               do i = 1, n_arguments
                  call iter%next()
-                 argument => iter%get()
+                 argument => iter%of()
                  read(argument,*) arg_value_int
                  call integer_list%push_back(arg_value_int)
               end do
@@ -419,7 +419,7 @@ contains
            case ('real')
               do i = 1, n_arguments
                  call iter%next()
-                 argument => iter%get()
+                 argument => iter%of()
                  read(argument,*) arg_value_real
                  call real_list%push_back(arg_value_real)
               end do
@@ -447,9 +447,9 @@ contains
            else ! value (if any) is in next token
               call iter%next()
               if (iter /= end) then
-                 argument => iter%get()
+                 argument => iter%of()
               else ! no more tokens - allowed for nargs=='?'
-                 call iter%previous()
+                 call iter%prev()
                  argument => null()
               end if
               if (.not. associated(argument)) then
@@ -477,7 +477,11 @@ contains
               ! TODO: throw exception.  '+' requires at least one value
            end if
            do while (iter /= end)
-              argument => iter%get()
+              argument => iter%of()
+              if (argument(1:1) == '-') then
+                 call iter%prev()
+                 exit
+              end if
               
               select case (action%get_type())
               case ('string')
@@ -518,7 +522,7 @@ contains
       
       option_iter = this%optionals%begin()
       do while (option_iter /= this%optionals%end())
-         opt => option_iter%get()
+         opt => option_iter%of()
          if (opt%has_default()) then
             q => opt%get_default()
             ! workaround for gfortran
@@ -551,11 +555,11 @@ contains
 
       iter_opt = this%optionals%begin()
       do while (iter_opt /= this%optionals%end())
-         opt => iter_opt%get()
+         opt => iter_opt%of()
          opt_strings => opt%get_option_strings()
          iter_opt_string = opt_strings%begin()
          do while (iter_opt_string /= opt_strings%end())
-            opt_string => iter_opt_string%get()
+            opt_string => iter_opt_string%of()
 
             n = len(opt_string)
             if (len(argument) >= n) then ! cannot rely on short-circuit
@@ -601,7 +605,7 @@ contains
       if (this%positionals%size() > 0) then
          act_iter = this%positionals%begin()
          do while (act_iter /= this%positionals%end())
-            act => act_iter%get()
+            act => act_iter%of()
             call act%print_help()
             call act_iter%next()
          end do
@@ -613,7 +617,7 @@ contains
          
          act_iter = this%optionals%begin()
          do while (act_iter /= this%optionals%end())
-            act => act_iter%get()
+            act => act_iter%of()
             call act%print_help()
             call act_iter%next()
          end do
@@ -637,7 +641,7 @@ contains
 
       act_iter = this%optionals%begin()
       do while (act_iter /= this%optionals%end())
-         act => act_iter%get()
+         act => act_iter%of()
 
          opt_strings => act%get_option_strings()
          opt_string => opt_strings%front()
@@ -657,7 +661,7 @@ contains
       if (this%positionals%size() > 0) then
          act_iter = this%positionals%begin()
          do while (act_iter /= this%positionals%end())
-            act => act_iter%get()
+            act => act_iter%of()
             opt_strings => act%get_option_strings()
             opt_string => opt_strings%front()
             header = header // ' ' // opt_string
