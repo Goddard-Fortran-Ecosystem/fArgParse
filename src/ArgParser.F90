@@ -478,7 +478,9 @@ contains
            if (n_arguments == '+' .and. iter == end) then
               ! TODO: throw exception.  '+' requires at least one value
            end if
+           
            do while (iter /= end)
+
               argument => iter%of()
               if (argument(1:1) == '-') then
                  call iter%prev()
