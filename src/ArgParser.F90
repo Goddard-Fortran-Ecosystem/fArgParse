@@ -147,7 +147,7 @@ contains
    subroutine add_argument_as_attributes(this, &
         & opt_string_1, opt_string_2, opt_string_3, opt_string_4, &  ! Positional arguments
         & unused, &                                    ! Keyword enforcer
-        & action, type, n_arguments, dest, default, const, help) ! Keyword arguments
+        & action, type, n_arguments, dest, default, const, choices, help) ! Keyword arguments
 
       class (ArgParser), target, intent(inout) :: this
       character(*), intent(in) :: opt_string_1
@@ -161,6 +161,7 @@ contains
       class(*), optional, intent(in) :: n_arguments
       character(*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
+      character(*), optional, intent(in) :: choices(:)
       character(*), optional, intent(in) :: help
       class(*), optional, intent(in) :: default
 
@@ -177,7 +178,7 @@ contains
 
       arg = this%registry%at(action_)
       call arg%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
+           & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, choices=choices, help=help)
       call this%add_argument(arg)
 
    end subroutine add_argument_as_attributes
@@ -355,7 +356,7 @@ contains
 
    subroutine handle_option(this, action, argument, iter, end, embedded_value, args)
      class(ArgParser), intent(in) :: this
-     class(BaseAction), intent(inout) :: action
+     class(BaseAction), target, intent(inout) :: action
      character(:), pointer :: argument
      type(StringVectorIterator), intent(inout) :: iter
      type(StringVectorIterator), intent(in) :: end
@@ -366,6 +367,7 @@ contains
      type(RealVector) :: real_list
      type(StringVector) :: string_list
      integer :: i
+     character(:), pointer :: choices(:)
 
      integer :: arg_value_int
      real :: arg_value_real
@@ -510,6 +512,14 @@ contains
            print*,'unimplemented'
         end select
      end select
+
+     print*,__FILE__,__LINE__
+     choices => action%get_choices()
+     if (associated(choices)) then
+        if (.not. any(choices == argument)) then
+           error stop 'invalid choice for argument'
+        end if
+     end if
    end subroutine handle_option
 
    subroutine get_defaults(this, option_values)

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Added
+
+- "choices" option for parser.  This allows user to select allowed
+  strings that actual options must match.  Note that this is slightly
+  different than Python ArgParse in that comparison is done on the
+  text of the arguments not after conversion.
+
 ## Changed
 
 - Switched to use gFTL v2 and gFTL-shared v2 interfaces This
