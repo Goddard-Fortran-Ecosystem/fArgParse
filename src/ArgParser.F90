@@ -19,10 +19,10 @@ module fp_ArgParser
    use fp_KeywordEnforcer
    use fp_None
    use fp_String
-   use gFTL_IntegerVector
-   use gFTL_RealVector
-   use gFTL_StringVector
-   use gFTL_StringUnlimitedMap
+   use gFTL2_IntegerVector
+   use gFTL2_RealVector
+   use gFTL2_StringVector
+   use gFTL2_StringUnlimitedMap
    implicit none
    private
 
@@ -147,7 +147,7 @@ contains
    subroutine add_argument_as_attributes(this, &
         & opt_string_1, opt_string_2, opt_string_3, opt_string_4, &  ! Positional arguments
         & unused, &                                    ! Keyword enforcer
-        & action, type, n_arguments, dest, default, const, help) ! Keyword arguments
+        & action, type, n_arguments, dest, default, const, choices, help) ! Keyword arguments
 
       class (ArgParser), target, intent(inout) :: this
       character(*), intent(in) :: opt_string_1
@@ -161,6 +161,7 @@ contains
       class(*), optional, intent(in) :: n_arguments
       character(*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
+      character(*), optional, intent(in) :: choices(:)
       character(*), optional, intent(in) :: help
       class(*), optional, intent(in) :: default
 
@@ -177,7 +178,7 @@ contains
 
       arg = this%registry%at(action_)
       call arg%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, help=help)
+           & type=type, n_arguments=n_arguments, dest=dest, default=default, const=const, choices=choices, help=help)
       call this%add_argument(arg)
 
    end subroutine add_argument_as_attributes
@@ -225,7 +226,7 @@ contains
 
       iter = arguments%begin()
       do while (iter /= arguments%end())
-         argument => iter%get()
+         argument => iter%of()
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
 
@@ -311,7 +312,7 @@ contains
 
       iter = arguments%begin()
       do while (iter /= arguments%end())
-         argument => iter%get()
+         argument => iter%of()
          opt => this%get_option_matching(argument, embedded_value)
          if (associated(opt)) then ! argument corresponds to an optional argument
 
@@ -355,7 +356,7 @@ contains
 
    subroutine handle_option(this, action, argument, iter, end, embedded_value, args)
      class(ArgParser), intent(in) :: this
-     class(BaseAction), intent(inout) :: action
+     class(BaseAction), target, intent(inout) :: action
      character(:), pointer :: argument
      type(StringVectorIterator), intent(inout) :: iter
      type(StringVectorIterator), intent(in) :: end
@@ -366,6 +367,7 @@ contains
      type(RealVector) :: real_list
      type(StringVector) :: string_list
      integer :: i
+     character(:), pointer :: choices(:)
 
      integer :: arg_value_int
      real :: arg_value_real
@@ -383,7 +385,7 @@ contains
         else
            call iter%next()
            ! TODO: should raise exception if there are not more arguments.
-           argument => iter%get()
+           argument => iter%of()
         end if
         select case (action%get_type())
         case ('string')
@@ -404,14 +406,14 @@ contains
            case ('string')
               do i = 1, n_arguments
                  call iter%next()
-                 argument => iter%get()
+                 argument => iter%of()
                  call string_list%push_back(argument)
               end do
               args = string_list
            case ('integer')
               do i = 1, n_arguments
                  call iter%next()
-                 argument => iter%get()
+                 argument => iter%of()
                  read(argument,*) arg_value_int
                  call integer_list%push_back(arg_value_int)
               end do
@@ -419,7 +421,7 @@ contains
            case ('real')
               do i = 1, n_arguments
                  call iter%next()
-                 argument => iter%get()
+                 argument => iter%of()
                  read(argument,*) arg_value_real
                  call real_list%push_back(arg_value_real)
               end do
@@ -447,9 +449,9 @@ contains
            else ! value (if any) is in next token
               call iter%next()
               if (iter /= end) then
-                 argument => iter%get()
+                 argument => iter%of()
               else ! no more tokens - allowed for nargs=='?'
-                 call iter%previous()
+                 call iter%prev()
                  argument => null()
               end if
               if (.not. associated(argument)) then
@@ -478,9 +480,10 @@ contains
            end if
            
            do while (iter /= end)
-              argument => iter%get()
+
+              argument => iter%of()
               if (argument(1:1) == '-') then
-                 call iter%previous()
+                 call iter%prev()
                  exit
               end if
               
@@ -511,6 +514,14 @@ contains
            print*,'unimplemented'
         end select
      end select
+
+     print*,__FILE__,__LINE__
+     choices => action%get_choices()
+     if (associated(choices)) then
+        if (.not. any(choices == argument)) then
+           error stop 'invalid choice for argument'
+        end if
+     end if
    end subroutine handle_option
 
    subroutine get_defaults(this, option_values)
@@ -523,7 +534,7 @@ contains
       
       option_iter = this%optionals%begin()
       do while (option_iter /= this%optionals%end())
-         opt => option_iter%get()
+         opt => option_iter%of()
          if (opt%has_default()) then
             q => opt%get_default()
             ! workaround for gfortran
@@ -556,11 +567,11 @@ contains
 
       iter_opt = this%optionals%begin()
       do while (iter_opt /= this%optionals%end())
-         opt => iter_opt%get()
+         opt => iter_opt%of()
          opt_strings => opt%get_option_strings()
          iter_opt_string = opt_strings%begin()
          do while (iter_opt_string /= opt_strings%end())
-            opt_string => iter_opt_string%get()
+            opt_string => iter_opt_string%of()
 
             n = len(opt_string)
             if (len(argument) >= n) then ! cannot rely on short-circuit
@@ -606,7 +617,7 @@ contains
       if (this%positionals%size() > 0) then
          act_iter = this%positionals%begin()
          do while (act_iter /= this%positionals%end())
-            act => act_iter%get()
+            act => act_iter%of()
             call act%print_help()
             call act_iter%next()
          end do
@@ -618,7 +629,7 @@ contains
          
          act_iter = this%optionals%begin()
          do while (act_iter /= this%optionals%end())
-            act => act_iter%get()
+            act => act_iter%of()
             call act%print_help()
             call act_iter%next()
          end do
@@ -642,7 +653,7 @@ contains
 
       act_iter = this%optionals%begin()
       do while (act_iter /= this%optionals%end())
-         act => act_iter%get()
+         act => act_iter%of()
 
          opt_strings => act%get_option_strings()
          opt_string => opt_strings%front()
@@ -662,7 +673,7 @@ contains
       if (this%positionals%size() > 0) then
          act_iter = this%positionals%begin()
          do while (act_iter /= this%positionals%end())
-            act => act_iter%get()
+            act => act_iter%of()
             opt_strings => act%get_option_strings()
             opt_string => opt_strings%front()
             header = header // ' ' // opt_string

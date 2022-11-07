@@ -1,7 +1,7 @@
 module fArgParse
    use fp_ArgParser
    use fp_Cast
-   use gFTL_StringUnlimitedMap
+   use gFTL2_StringUnlimitedMap
    implicit none
    private
 

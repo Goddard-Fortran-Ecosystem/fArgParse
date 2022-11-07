@@ -1,11 +1,19 @@
 module fp_StringActionMap
    use fp_BaseAction
-#define _map StringActionMap
-#define _iterator StringActionMapIterator
-#define _pair StringActionPair
-#include "types/key_deferredLengthString.inc"
-#define _value class(BaseAction)
-#define _value_allocatable
-#define _alt
-#include "templates/map.inc"
+
+#define Key __CHARACTER_DEFERRED
+#define T BaseAction
+#define T_polymorphic
+#define Map StringActionMap
+#define MapIterator StringActionMapIterator
+#define Pair StringActionPair
+
+#include "map/template.inc"
+
+#undef Pair
+#undef MapIterator
+#undef Map
+#undef T_polpmorphic
+#undef T
+#undef Key
 end module fp_StringActionMap

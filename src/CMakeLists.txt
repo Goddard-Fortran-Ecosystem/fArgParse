@@ -34,12 +34,12 @@ target_include_directories (fargparse PRIVATE ${FARGPARSE_SOURCE_DIR}/include)
 add_library(FARGPARSE::fargparse ALIAS fargparse)
 
 include(build_submodule)
-build_submodule(../extern/gFTL-shared PROJECT GFTL_SHARED TARGET GFTL_SHARED::gftl-shared)
+build_submodule(../extern/gFTL-shared PROJECT GFTL_SHARED TARGET GFTL_SHARED::gftl-shared-v2)
 
-if (NOT TARGET GFTL::gftl)
+if (NOT TARGET GFTL::gftl-v2)
    message(FATAL_ERROR "Could not find gFTL. This should not happen.")
 endif ()
-target_link_libraries(fargparse PUBLIC GFTL::gftl GFTL_SHARED::gftl-shared)
+target_link_libraries(fargparse PUBLIC GFTL::gftl-v2 GFTL_SHARED::gftl-shared-v2)
 
 
 install (DIRECTORY ${FARGPARSE_BINARY_DIR}/mod/ DESTINATION ${dest}/include)

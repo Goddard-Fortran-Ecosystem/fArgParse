@@ -2,7 +2,7 @@
 module fp_BaseAction
    use fp_AbstractArgParser, only: AbstractAction
    use fp_KeywordEnforcer
-   use gFTL_StringVector
+   use gFTL2_StringVector
    use fp_None
    use fp_String
    implicit none
@@ -20,6 +20,7 @@ module fp_BaseAction
       character(:), allocatable :: help
       class(*), allocatable :: n_arguments ! string or integer
       logical :: positional = .false.
+      character(len=:), allocatable :: choices(:)
    contains
       procedure :: initialize
       procedure :: get_destination
@@ -29,6 +30,7 @@ module fp_BaseAction
       procedure :: get_n_arguments
       procedure :: get_default
       procedure :: get_help
+      procedure :: get_choices
       procedure :: has_default
       procedure :: is_positional
       procedure :: print_help
@@ -49,7 +51,7 @@ contains
         ! Keyword enforcer
         & unused, &
         ! Keyword arguments
-        & type, n_arguments, dest, default, const, help)
+        & type, n_arguments, dest, default, const, choices, help)
       class (BaseAction), intent(out) :: this
 
       character(len=*), intent(in) :: opt_string_1
@@ -63,6 +65,7 @@ contains
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default
+      character(len=*), optional, intent(in) :: choices(:)
       character(len=*), optional, intent(in) :: help
 
       type (StringVectorIterator) :: iter
@@ -81,7 +84,7 @@ contains
          iter = this%option_strings%begin()
          do while (iter /= this%option_strings%end())
             
-            opt_string => iter%get()
+            opt_string => iter%of()
             if (is_long_option_string(opt_string)) then
                this%destination =  opt_string(3:)
                exit
@@ -132,6 +135,10 @@ contains
          this%const = const
       else
          this%const = NONE
+      end if
+
+      if (present(choices)) then
+         this%choices = choices
       end if
    end subroutine initialize
 
@@ -253,10 +260,10 @@ contains
       line = '  '
       
       iter = this%option_strings%begin()
-      line = line // iter%get()
+      line = line // iter%of()
       call iter%next()
       do while (iter /= this%option_strings%end())
-         line = line // ', ' //iter%get()
+         line = line // ', ' //iter%of()
          call iter%next()
       end do
 
@@ -271,7 +278,7 @@ contains
 
    subroutine act(this, namespace, parser, value, option_string)
       use fp_AbstractArgParser, only: AbstractArgParser
-      use gFTL_stringUnlimitedMap
+      use gFTL2_stringUnlimitedMap
       class (BaseAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
@@ -310,6 +317,15 @@ contains
 
    end function get_n_arguments
 
+   function get_choices(this) result(choices)
+      character(:), pointer :: choices(:)
+      class(BaseAction), target, intent(in) :: this
 
+      if (allocated(this%choices)) then
+         choices => this%choices
+      else
+         choices => null()
+      end if
+   end function get_choices
 
 end module fp_BaseAction

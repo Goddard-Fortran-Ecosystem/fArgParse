@@ -15,10 +15,6 @@ module fp_StoreConstAction
       procedure :: act
    end type StoreConstAction
 
-
-
-
-
 contains
 
    subroutine initialize(this, &
@@ -27,7 +23,7 @@ contains
         ! Keyword enforcer
         & unused, &
         ! Keyword arguments
-        & type, n_arguments, dest, default, const, help)
+        & type, n_arguments, dest, default, const, choices, help)
       class (StoreConstAction), intent(out) :: this
 
       character(len=*), intent(in) :: opt_string_1
@@ -41,12 +37,10 @@ contains
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default
+      character(len=*), optional, intent(in) :: choices(:)
       character(len=*), optional, intent(in) :: help
 
       class(*), allocatable :: default_
-
-      _UNUSED_DUMMY(unused)
-      _UNUSED_DUMMY(const)
 
       if (present(default)) then
          default_ = default
@@ -55,19 +49,28 @@ contains
       end if
 
       call this%BaseAction%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & type=type, n_arguments=0, dest=dest, default=default_, const=const, help=help)
+           & type=type, n_arguments=0, dest=dest, default=default_, const=const, choices=choices, help=help)
+
+      _UNUSED_DUMMY(unused)
+      _UNUSED_DUMMY(const)
+
    end subroutine initialize
 
 
    subroutine act(this, namespace, parser, value, option_string)
-      use gFTL_StringUnlimitedMap
+      use gFTL2_StringUnlimitedMap
       class (StoreConstAction), intent(inout) :: this
       type (StringUnlimitedMap), intent(inout) :: namespace
       class (AbstractArgParser), intent(in) :: parser
       class(*), intent(in) :: value
       character(*), optional, intent(in) :: option_string
 
-      call namespace%insert(this%get_destination(), this%get_const())
+      character(:), allocatable :: dest
+      class(*), pointer :: const
+
+      dest = this%get_destination()
+      const => this%get_const()
+      call namespace%insert(dest, const)
 
    end subroutine act
 
