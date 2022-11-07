@@ -601,4 +601,22 @@ contains
       
     end subroutine test_unprocessed_argument
 
+    @test
+    subroutine test_choices
+      use fp_CommandLineArguments
+      use fp_String
+      type (ArgParser) :: p
+      type (StringVector) :: arguments
+      type (StringUnlimitedMap) :: options
+      class(*), pointer :: opt
+
+      p = ArgParser()
+
+      call p%add_argument('-d', type='string', action='store', choices=['A', 'B'])
+
+      call arguments%push_back('-d')
+      call arguments%push_back('A')
+      options = p%parse_args(arguments)
+      
+   end subroutine test_choices
 end module Test_ArgParser

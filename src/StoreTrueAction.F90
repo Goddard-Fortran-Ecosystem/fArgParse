@@ -23,7 +23,7 @@ contains
         ! Keyword enforcer
         & unused, &
         ! Keyword arguments
-        & type, n_arguments, dest, default, const, help)
+        & type, n_arguments, dest, default, const, choices, help)
       class (StoreTrueAction), intent(out) :: this
 
       character(len=*), intent(in) :: opt_string_1
@@ -37,6 +37,7 @@ contains
       character(len=*), optional, intent(in) :: dest
       class(*), optional, intent(in) :: const
       class(*), optional, intent(in) :: default
+      character(len=*), optional, intent(in) :: choices(:)
       character(len=*), optional, intent(in) :: help
 
       class(*), allocatable :: default_
@@ -51,7 +52,7 @@ contains
       end if
 
       call this%StoreConstAction%initialize(opt_string_1, opt_string_2, opt_string_3, opt_string_4, &
-           & type=type, dest=dest, default=default_, const=.true., help=help)
+           & type=type, dest=dest, default=default_, const=.true., choices=choices, help=help)
    end subroutine initialize
 
 end module fp_StoreTrueAction
