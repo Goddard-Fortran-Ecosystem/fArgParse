@@ -515,7 +515,6 @@ contains
         end select
      end select
 
-     print*,__FILE__,__LINE__
      choices => action%get_choices()
      if (associated(choices)) then
         if (.not. any(choices == argument)) then

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project (FARGPARSE
 
-  VERSION 1.4.1
+  VERSION 1.4.2
   LANGUAGES Fortran)
 
 # Most users of this software do not (should not?) have permissions to
@@ -20,6 +20,9 @@ if(NOT found)
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+include(build_submodule)
+build_submodule(extern/gFTL-shared PROJECT GFTL_SHARED TARGET GFTL_SHARED::gftl-shared-v2)
 
 add_subdirectory (src)
 
@@ -45,6 +48,11 @@ if (PFUNIT_FOUND)
   add_subdirectory(tests)
 endif ()
 
+# The following is needed for external projects using *nix make when
+# parent project builds fArgParse as a subproject.
+set (top_dir FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR})
+set (FARGPARSE_TOP_DIR "${CMAKE_INSTALL_PREFIX}/${top_dir}" CACHE PATH "")
+
 # find_package() support
 include(CMakePackageConfigHelpers)
 configure_package_config_file(FARGPARSEConfig.cmake.in FARGPARSEConfig.cmake
@@ -55,14 +63,10 @@ write_basic_package_version_file(FARGPARSEConfig-version.cmake
   COMPATIBILITY SameMajorVersion
   )
 
-set (top_dir FARGPARSE-${FARGPARSE_VERSION_MAJOR}.${FARGPARSE_VERSION_MINOR})
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSEConfig-version.cmake
   DESTINATION "${top_dir}/cmake")
 
-# The following is needed for external projects using *nix make when
-# parent project builds fArgParse as a subproject.
-set (FARGPARSE_TOP_DIR "${CMAKE_INSTALL_PREFIX}/${top_dir}" CACHE PATH "")
 configure_file (FARGPARSE.mk.in ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk @ONLY)
 install (
   FILES ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk ${CMAKE_CURRENT_BINARY_DIR}/FARGPARSE.mk
