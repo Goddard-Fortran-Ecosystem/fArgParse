@@ -5,28 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## Unreleased
+
+## [1.5.0] - 2023-04-13
 
 ### Added
 
 - Added `IntelLLVM.cmake` file as a copy of `Intel.cmake` to support the LLVM Intel compiler frontends
 
+### Changed
+
+- Updated submodules for gFTL-shared (v1.6.0)
+
+## [1.4.2] - 2023-01-23
+
+### Fixed
+
+- Fixes for GNU Make builds
+- Update gFTL-shared submodule to v1.5.1
+
+
 ## [1.4.1] 2022-11-07
 
-## Fixed
+### Fixed
 
 - Botched a merge in a rush to get previous release out.
 
 ## [1.4.0] 2022-11-07
 
-## Added
+### Added
 
 - "choices" option for parser.  This allows user to select allowed
   strings that actual options must match.  Note that this is slightly
   different than Python ArgParse in that comparison is done on the
   text of the arguments not after conversion.
 
-## Changed
+### Changed
 
 - Switched to use gFTL v2 and gFTL-shared v2 interfaces This
   potentially introduces a subtle backward incompatibility as the

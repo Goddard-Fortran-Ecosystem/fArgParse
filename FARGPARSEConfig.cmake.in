@@ -30,4 +30,5 @@ endif()
 
 find_dependency(GFTL_SHARED)
 
+set(FARGPARSE_TOP_DIR "@FARGPARSE_TOP_DIR@")
 include ("${CMAKE_CURRENT_LIST_DIR}/FARGPARSETargets.cmake")
