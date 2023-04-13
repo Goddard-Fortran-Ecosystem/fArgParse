@@ -28,7 +28,7 @@ module fp_ArgParser
 
    public :: ArgParser
    type, extends(AbstractArgParser) :: ArgParser
-      private
+!!$      private
       type (ActionVector) :: optionals
       type (ActionVector) :: positionals
       type (StringActionMap) :: registry
@@ -367,7 +367,7 @@ contains
      type(RealVector) :: real_list
      type(StringVector) :: string_list
      integer :: i
-     character(:), pointer :: choices(:)
+     type(StringVector), pointer :: choices
 
      integer :: arg_value_int
      real :: arg_value_real
@@ -516,8 +516,9 @@ contains
      end select
 
      choices => action%get_choices()
-     if (associated(choices)) then
-        if (.not. any(choices == argument)) then
+
+     if (choices%size() > 0) then
+        if (find(choices%begin(),choices%end(), argument) == choices%end()) then ! not found
            error stop 'invalid choice for argument'
         end if
      end if

@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated submodules for gFTL-shared (v1.6.0)
 
+### Fixed
+
+- implemented workaround for GFortran which was not correctly handling
+  deferred-length allocatable string arrays.  Used StringVector instead.
+
 ## [1.4.2] - 2023-01-23
 
 ### Fixed
