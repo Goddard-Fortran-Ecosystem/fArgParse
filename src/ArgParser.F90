@@ -28,7 +28,7 @@ module fp_ArgParser
 
    public :: ArgParser
    type, extends(AbstractArgParser) :: ArgParser
-!!$      private
+      private
       type (ActionVector) :: optionals
       type (ActionVector) :: positionals
       type (StringActionMap) :: registry
