@@ -13,14 +13,14 @@ module fp_BaseAction
    type, extends(AbstractAction) :: BaseAction
       private
       character(:), allocatable :: destination
-      type (StringVector) :: option_strings
+      type(StringVector) :: option_strings
       character(:), allocatable :: type
       class(*), allocatable :: const
       class(*), allocatable :: default
       character(:), allocatable :: help
       class(*), allocatable :: n_arguments ! string or integer
       logical :: positional = .false.
-      character(len=:), allocatable :: choices(:)
+      type(StringVector) :: choices
    contains
       procedure :: initialize
       procedure :: get_destination
@@ -68,8 +68,9 @@ contains
       character(len=*), optional, intent(in) :: choices(:)
       character(len=*), optional, intent(in) :: help
 
-      type (StringVectorIterator) :: iter
+      type(StringVectorIterator) :: iter
       character(:), pointer :: opt_string
+      integer :: i
 
       _UNUSED_DUMMY(unused)
       
@@ -138,7 +139,9 @@ contains
       end if
 
       if (present(choices)) then
-         this%choices = choices
+         do i = 1, size(choices)
+            call this%choices%push_back(choices(i))
+         end do
       end if
    end subroutine initialize
 
@@ -318,14 +321,11 @@ contains
    end function get_n_arguments
 
    function get_choices(this) result(choices)
-      character(:), pointer :: choices(:)
+      type(StringVector), pointer :: choices
       class(BaseAction), target, intent(in) :: this
 
-      if (allocated(this%choices)) then
-         choices => this%choices
-      else
-         choices => null()
-      end if
+      choices => this%choices
+
    end function get_choices
 
 end module fp_BaseAction
