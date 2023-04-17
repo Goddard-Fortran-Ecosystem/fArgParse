@@ -5,12 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## Unreleased
+
+## [1.5.0] - 2023-04-13
+
+### Added
+
+- Added `IntelLLVM.cmake` file as a copy of `Intel.cmake` to support the LLVM Intel compiler frontends
+
+### Changed
+
+- Updated submodules for gFTL-shared (v1.6.0)
+
+### Fixed
+
+- implemented workaround for GFortran which was not correctly handling
+  deferred-length allocatable string arrays.  Used StringVector instead.
+
 ## [1.4.2] - 2023-01-23
 
 ### Fixed
 
 - Fixes for GNU Make builds
 - Update gFTL-shared submodule to v1.5.1
+
 
 ## [1.4.1] 2022-11-07
 
