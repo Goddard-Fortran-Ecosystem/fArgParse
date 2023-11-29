@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.6.0]
+
+### Fixed
+
+- Add `-check nouninit` for Intel LLVM to work around [`ifx` bug](https://github.com/HPC-Bugs/reproducers/tree/main/compiler/Fortran/ifx/allocatable).
+
+#### Changed
+
+- Updated submodule for gFTL-shared (v1.7.0)
+
 ## [1.5.0] - 2023-04-13
 
 ### Added
@@ -16,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated submodules for gFTL-shared (v1.6.0)
+- Updated submodule for gFTL-shared (v1.6.0)
 
 ### Fixed
 
