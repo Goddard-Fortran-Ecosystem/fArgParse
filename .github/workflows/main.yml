@@ -58,7 +58,8 @@ jobs:
 
       - name: Build GFE Prereqs
         run: |
-          bash ./tools/travis-install-gfe.bash
+          bash ./tools/ci-install-gfe.bash
+
       - name: Build fArgParse
         run: |
           mkdir -p build
@@ -70,11 +71,12 @@ jobs:
         run: |
           cd build
           make -j$(nproc) tests
-      - name: Run Tests Again if failure
-        if: failure()
+
+      - name: Run Tests
         run: |
           cd build
           ctest -j1 --output-on-failure --repeat until-pass:4
+
       - name: Archive log files on failure
         uses: actions/upload-artifact@v4
         if: failure()
@@ -94,6 +96,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set all directories as git safe
+        run: |
+          git config --global --add safe.directory '*'
 
       - name: Setup Intel oneAPI repository
         run: |
@@ -106,6 +114,11 @@ jobs:
         timeout-minutes: 5
         run: sudo apt-get install intel-oneapi-compiler-fortran intel-oneapi-compiler-dpcpp-cpp
 
+      # optional
+      - name: Install Intel MPI
+        timeout-minutes: 5
+        run: sudo apt-get install intel-oneapi-mpi intel-oneapi-mpi-devel
+
       - name: Setup Intel oneAPI environment
         run: |
           source /opt/intel/oneapi/setvars.sh
@@ -116,10 +129,12 @@ jobs:
         run: |
           ${FC} --version
           ${CC} --version
+          mpirun --version
+          cmake --version
 
       - name: Build GFE Prereqs
         run: |
-          bash ./tools/travis-install-gfe.bash
+          bash ./tools/ci-install-gfe.bash
 
       - name: Build fArgParse
         run: |
@@ -133,11 +148,11 @@ jobs:
           cd build
           make -j$(nproc) tests
 
-      - name: Run Tests Again if failure
-        if: failure()
+      - name: Run Tests
         run: |
           cd build
           ctest -j1 --output-on-failure --repeat until-pass:4
+
       - name: Archive log files on failure
         uses: actions/upload-artifact@v4
         if: failure()
