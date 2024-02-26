@@ -12,6 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fujitsu compiler support
 
+### Changed
+
+- Updated CI
+  - Fix NVIDIA CI
+  - Add Intel
+  - Remove gcc 9 from macos
+
 ## [1.6.0]
 
 ### Fixed
