@@ -15,23 +15,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12]
-        compiler: [gfortran-9, gfortran-10, gfortran-11, gfortran-12]
+        os: [ubuntu-22.04, macos-11, macos-12]
+        compiler: [gfortran-10, gfortran-11, gfortran-12, gfortran-13]
         exclude:
-          - os: ubuntu-20.04
-            compiler: gfortran-11
-          - os: ubuntu-20.04
-            compiler: gfortran-12
-          - os: ubuntu-22.04
-            compiler: gfortran-9
           - os: macos-11
-            compiler: gfortran-12
-          - os: macos-12
-            compiler: gfortran-9
+            compiler: gfortran-13
           - os: macos-12
             compiler: gfortran-10
-          - os: macos-12
-            compiler: gfortran-12
 
       # fail-fast if set to 'true' here is good for production, but when
       # debugging, set to 'false'. fail-fast means if *any* ci test in the matrix fails
@@ -52,38 +42,43 @@ jobs:
 
     name: ${{ matrix.os }} / ${{ matrix.compiler }}
     steps:
-      - name: Install GCC 12 on Ubuntu 22.04
-        if: matrix.os == 'ubuntu-22.04' && matrix.compiler == 'gfortran-12'
-        run: |
-          sudo apt-get install gfortran-12 -y
-      - name: Versions
+      - name: Compiler Versions
         run: |
           ${FC} --version
           cmake --version
+
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Set all directories as git safe
+        run: |
+          git config --global --add safe.directory '*'
+
       - name: Build GFE Prereqs
         run: |
-          bash ./tools/travis-install-gfe.bash
+          bash ./tools/ci-install-gfe.bash
+
       - name: Build fArgParse
         run: |
           mkdir -p build
           cd build
           cmake .. -DCMAKE_Fortran_COMPILER=${FC} -DCMAKE_INSTALL_PREFIX=${HOME}/Software/fArgParse -DCMAKE_PREFIX_PATH=${HOME}/Software/GFE
           make -j$(nproc)
+
       - name: Build Tests
         run: |
           cd build
           make -j$(nproc) tests
-      - name: Run Tests Again if failure
-        if: failure()
+
+      - name: Run Tests
         run: |
           cd build
           ctest -j1 --output-on-failure --repeat until-pass:4
+
       - name: Archive log files on failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: logfiles
@@ -94,50 +89,131 @@ jobs:
     runs-on: ubuntu-20.04
 
     env:
-      FC: ifort
-      CC: icc
+      FC: ifx
+      CC: icx
 
     name: Intel Fortran
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install Intel compilers
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set all directories as git safe
         run: |
-          cd /tmp
+          git config --global --add safe.directory '*'
+
+      - name: Setup Intel oneAPI repository
+        run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
-          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-          sudo apt install --no-install-recommends intel-oneapi-compiler-fortran intel-oneapi-mpi \
-            intel-oneapi-compiler-dpcpp-cpp-and-cpp-classic intel-oneapi-mpi-devel
+          sudo apt-get update
+
+      - name: Install Intel oneAPI compilers
+        timeout-minutes: 5
+        run: sudo apt-get install intel-oneapi-compiler-fortran intel-oneapi-compiler-dpcpp-cpp
+
+      # optional
+      - name: Install Intel MPI
+        timeout-minutes: 5
+        run: sudo apt-get install intel-oneapi-mpi intel-oneapi-mpi-devel
+
+      - name: Setup Intel oneAPI environment
+        run: |
           source /opt/intel/oneapi/setvars.sh
           printenv >> $GITHUB_ENV
+          printenv | grep intel
+
       - name: Versions
         run: |
           ${FC} --version
           ${CC} --version
+          mpirun --version
+          cmake --version
+
       - name: Build GFE Prereqs
         run: |
-          bash ./tools/travis-install-gfe.bash
+          bash ./tools/ci-install-gfe.bash
+
       - name: Build fArgParse
         run: |
           mkdir -p build
           cd build
           cmake .. -DCMAKE_Fortran_COMPILER=${FC} -DCMAKE_INSTALL_PREFIX=${HOME}/Software/fArgParse -DCMAKE_PREFIX_PATH=${HOME}/Software/GFE
           make -j$(nproc)
+
       - name: Build Tests
         run: |
           cd build
           make -j$(nproc) tests
-      - name: Run Tests Again if failure
-        if: failure()
+
+      - name: Run Tests
         run: |
           cd build
           ctest -j1 --output-on-failure --repeat until-pass:4
+
       - name: Archive log files on failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: logfiles
           path: |
             build/**/*.log
+
+  Nvidia:
+    runs-on: ubuntu-20.04
+    container: nvcr.io/nvidia/nvhpc:24.1-devel-cuda12.3-ubuntu22.04
+    env:
+      FC: nvfortran
+
+    name: Nvidia HPC
+    steps:
+      - name: Versions
+        run: |
+          ${FC} --version
+          cmake --version
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set all directories as git safe
+        run: |
+          git config --global --add safe.directory '*'
+
+      - name: Add python-is-python3 package
+        run: |
+          apt-get update
+          apt-get install -y python-is-python3
+
+      - name: Build GFE Prereqs
+        run: |
+          bash ./tools/ci-install-gfe.bash
+
+      - name: Build fArgParse
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_Fortran_COMPILER=${FC} -DCMAKE_INSTALL_PREFIX=${HOME}/Software/fArgParse -DCMAKE_PREFIX_PATH=${HOME}/Software/GFE
+          make -j$(nproc)
+
+      - name: Build Tests
+        run: |
+          cd build
+          make -j$(nproc) tests
+
+      - name: Run Tests
+        run: |
+          cd build
+          ctest -j1 --output-on-failure --repeat until-pass:4
+
+      - name: Archive log files on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: logfiles
+          path: |
+            build/**/*.log
+
