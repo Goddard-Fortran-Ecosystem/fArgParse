@@ -8,7 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## [1.6.0]
+## [1.7.0] - 2024-03-04
+
+### Added
+
+- Add Apache 2.0 license (huzzah!)
+- Fujitsu compiler support
+
+### Changed
+
+- Updated CI
+  - Fix NVIDIA CI
+  - Add Intel
+  - Remove gcc 9 from macos
+
+## [1.6.0] - 2023-11-29
 
 ### Fixed
 
