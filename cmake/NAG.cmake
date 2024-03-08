@@ -9,6 +9,6 @@ set(mismatch "-mismatch")
 
 set(CMAKE_Fortran_FLAGS_DEBUG  "-O0")
 set(CMAKE_Fortran_FLAGS_RELEASE "-O3")
-set(CMAKE_Fortran_FLAGS "-g ${cpp} ${traceback} ${check_all} -w=x95 -nocheck_modtime")
+set(CMAKE_Fortran_FLAGS "-g -quiet ${cpp} ${traceback} ${check_all} -w=x95 -nocheck_modtime")
 
 add_definitions(-D_NAG)
