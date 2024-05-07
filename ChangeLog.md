@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `-quiet` flag for NAG Fortran
 
+### Added
+
+- LLVMFlang compiler support
+
 ## [1.7.0] - 2024-03-04
 
 ### Added
