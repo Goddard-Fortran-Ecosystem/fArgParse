@@ -8,11 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.8.0] - 2024-07-09
+
 ### Changed
 
 - Added `-quiet` flag for NAG Fortran
+- Updated submodule for gFTL-shared (v1.9.0)
 - Update CI to remove `macos-12`, add `macos-14` and `ubuntu-24.04`, add `gfortran-14`
-- Updated submodule for gFTL-shared (cbb09f4)
 
 ## [1.7.0] - 2024-03-04
 
