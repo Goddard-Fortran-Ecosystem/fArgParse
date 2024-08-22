@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - LLVMFlang compiler support
 
+### Changed
+
+- Update CI to have `gfortran-10` and `gfortran-11` only on `ubuntu-22.04`
+- Update CI NVIDIA to NVHPC 24.7
+
 ## [1.8.0] - 2024-07-09
 
 ### Changed
