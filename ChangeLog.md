@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.9.0] - 2025-01-31
+
 ### Changed
 
 - Update CI to have `gfortran-10` and `gfortran-11` only on `ubuntu-22.04`
@@ -17,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Implemented a workaround for IFX in tests.  Updated tests to use gFTL v2 while at it.
+
+### Added
+
+- LLVMFlang compiler support
 
 ## [1.8.0] - 2024-07-09
 
