@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+
+- Implemented a workaround for IFX in tests.  Updated tests to use gFTL v2 while at it.
+
 ## [1.8.0] - 2024-07-09
 
 ### Changed
