@@ -3,10 +3,10 @@ module Test_ArgParser
    use fp_ArgParser
    use fp_Cast
    use fp_ErrorCodes
-   use gFTL_StringVector
-   use gFTL_StringUnlimitedMap
-   use gFTL_IntegerVector
-   use gFTL_RealVector
+   use gFTL2_StringVector
+   use gFTL2_StringUnlimitedMap
+   use gFTL2_IntegerVector
+   use gFTL2_RealVector
    implicit none
 
 !   @suite(name='ArgParser_suite')
@@ -74,10 +74,10 @@ contains
       call p%add_argument('--f2', action='store_false')
 
       options = p%parse_args(arguments)
-      call cast(options%at('f1'), flag=flag)
+      call cast(options%of('f1'), flag=flag)
       @assertTrue(flag)
 
-      call cast(options%at('f2'), flag=flag)
+      call cast(options%of('f2'), flag=flag)
       @assertFalse(flag)
 
 
@@ -101,7 +101,7 @@ contains
       options = p%parse_args(arguments)
 
       @assertEqual(1, options%size())
-      call cast(options%at('n'), i, rc=status)
+      call cast(options%of('n'), i, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(1, i)
 
@@ -124,10 +124,10 @@ contains
 
       @assertEqual(1, options%size())
 
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
 
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%of('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(5, n)
 
@@ -136,10 +136,10 @@ contains
       options = p%parse_args(arguments)
       
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
 
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%of('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(3, n)
 
@@ -164,10 +164,10 @@ contains
       options = p%parse_args(arguments)
 
       @assertEqual(1, options%size())
-      opt_value => options%at('f')
+      opt_value => options%of('f')
       @assertAssociated(opt_value)
 
-      call cast(options%at('f'), string, rc=status)
+      call cast(options%of('f'), string, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual('foo', string)
 
@@ -191,10 +191,10 @@ contains
       options = p%parse_args(arguments)
 
       @assertEqual(1, options%size())
-      opt_value => options%at('x')
+      opt_value => options%of('x')
       @assertAssociated(opt_value)
 
-      call cast(options%at('x'), x, rc=status)
+      call cast(options%of('x'), x, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(1.234, x)
 
@@ -218,10 +218,10 @@ contains
       options = p%parse_args(arguments)
 
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
 
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%of('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(3, n)
 
@@ -245,10 +245,10 @@ contains
       options = p%parse_args(arguments)
 
       @assertEqual(1, options%size())
-      opt_value => options%at('foo')
+      opt_value => options%of('foo')
       @assertAssociated(opt_value)
 
-      call cast(options%at('foo'), foo, rc=status)
+      call cast(options%of('foo'), foo, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(3, foo)
 
@@ -272,10 +272,10 @@ contains
       ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
       
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%of('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(4, n)
       
@@ -300,16 +300,15 @@ contains
 
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      call cast(options%at('list'), found, rc=status)
+      call cast(options%of('list'), found, rc=status)
       @assertEqual(SUCCESS, status)
 
       @assertEqual(2, found%size())
-
-      call cast(found%at(1), f1, rc=status)
-      @assertEqual(SUCCESS, status)
+      f1 = found%at(1, rc=status)
       @assertEqual(5, f1)
+      @assertEqual(SUCCESS, status)
 
-      call cast(found%at(2), f2, rc=status)
+      f2 = found%at(2, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(7, f2)
 
@@ -334,16 +333,16 @@ contains
 
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      call cast(options%at('list'), found, rc=status)
+      call cast(options%of('list'), found, rc=status)
       @assertEqual(SUCCESS, status)
 
       @assertEqual(2, found%size())
 
-      call cast(found%at(1), f1, rc=status)
+      f1 = found%at(1, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(5., f1)
 
-      call cast(found%at(2), f2, rc=status)
+      f2 = found%at(2, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(7., f2)
 
@@ -368,16 +367,16 @@ contains
 
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      call cast(options%at('list'), found, rc=status)
+      call cast(options%of('list'), found, rc=status)
       @assertEqual(SUCCESS, status)
 
       @assertEqual(2, found%size())
 
-      call cast(found%at(1), f1, rc=status)
+      f1 = found%at(1, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual('cat', f1)
 
-      call cast(found%at(2), f2, rc=status)
+      f2 = found%at(2, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual('dog', f2)
 
@@ -402,9 +401,9 @@ contains
       ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%of('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(3, n)
 
@@ -431,10 +430,10 @@ contains
       ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
       
-      call cast(options%at('n'), n, rc=status)
+      call cast(options%of('n'), n, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(1, n)
 
@@ -461,10 +460,10 @@ contains
       ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
 
-      call cast(options%at('n'), found, rc=status)
+      call cast(options%of('n'), found, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(0, found%size())
 
@@ -491,13 +490,13 @@ contains
       ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
       
-      call cast(options%at('n'), found, rc=status)
+      call cast(options%of('n'), found, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(1, found%size())
-      @assertEqual(3, found%at(1))
+      @assertEqual(3, found%of(1))
 
     end subroutine test_nargs_is_asterisk_1_arg
 
@@ -523,14 +522,14 @@ contains
       ! sanity checks
       options = p%parse_args(arguments)
       @assertEqual(1, options%size())
-      opt_value => options%at('n')
+      opt_value => options%of('n')
       @assertAssociated(opt_value)
       
-      call cast(options%at('n'), found, rc=status)
+      call cast(options%of('n'), found, rc=status)
       @assertEqual(SUCCESS, status)
       @assertEqual(2, found%size())
-      @assertEqual(3, found%at(1))
-      @assertEqual(5, found%at(2))
+      @assertEqual(3, found%of(1))
+      @assertEqual(5, found%of(2))
 
     end subroutine test_nargs_is_asterisk_2_arg
 
@@ -570,7 +569,7 @@ contains
       options = p%parse_args(arguments)
 #endif
 
-      opt => options%at('runner')
+      opt => options%of('runner')
       select type (opt)
       class is (String)
          @assertEqual('TestRunner', opt%string)
@@ -625,7 +624,7 @@ contains
       options = p%parse_args(arguments)
       @assert_that(int(options%size()), is(2))
 
-      call cast(options%at('potential'), p_vals)
+      call cast(options%of('potential'), p_vals)
       @assert_that(int(p_vals%size()), is(3))
       @assertEqual('s1', p_vals%of(1))
       @assertEqual('s2', p_vals%of(2))
