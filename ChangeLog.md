@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+
+- Update CI to have `gfortran-10` and `gfortran-11` only on `ubuntu-22.04`
+- Update CI NVIDIA to NVHPC 24.7
+- Add Flang to CI
+
+### Fixed
+
+- Implemented a workaround for IFX in tests.  Updated tests to use gFTL v2 while at it.
+
 ## [1.8.0] - 2024-07-09
 
 ### Changed
