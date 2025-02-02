@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## [1.9.0] - 2025-01-31
+## [1.9.0] - 2025-02-02
 
 ### Changed
 
+- Update submodule (gFTL-shared)
 - Update CI to have `gfortran-10` and `gfortran-11` only on `ubuntu-22.04`
 - Update CI NVIDIA to NVHPC 24.7
 - Add Flang to CI
