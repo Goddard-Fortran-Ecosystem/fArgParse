@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Update CMake minimum version to 3.24
+- Update CI to use `macos-15`, remove `macos-13`
 
 ## [1.9.0] - 2025-02-02
 
