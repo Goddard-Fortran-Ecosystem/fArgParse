@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.10.0] - 2025-09-30
+
+### Changed
+
+- Update submodule (gFTL-shared v1.11.0)
+- Update CMake minimum version to 3.24
+- Remove `macos-13` from CI, add `macos-15`
+- Add `gfortran-15` to macOS CI
+
 ## [1.9.0] - 2025-02-02
 
 ### Changed
