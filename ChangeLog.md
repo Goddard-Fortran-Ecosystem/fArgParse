@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.11.0] - 2026-02-23
+
 ### Changed
 
-- Remove `gfortran-12` from macos runners, clean up CI
+- Update submodule (gFTL-shared v1.12.0)
 
 ## [1.10.0] - 2025-09-30
 
