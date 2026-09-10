@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [1.12.0] - 2026-09-10
+
+### Fixed
+
+- Support `ifx` and `ifort` compilers on Windows by branching debug and compiler flags (#168)
+
+### Changed
+
+- Update CI to match build matrix of GFE
+
 ## [1.11.0] - 2026-02-23
 
 ### Changed
