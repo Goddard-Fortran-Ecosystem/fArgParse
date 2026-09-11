@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+
+- Windows CI workflow for MinGW `gfortran` and Intel `ifx`
+
 ## [1.12.0] - 2026-09-10
 
 ### Fixed

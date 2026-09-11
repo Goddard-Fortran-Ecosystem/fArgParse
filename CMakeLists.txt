@@ -18,6 +18,10 @@ if(NOT found)
   message( FATAL_ERROR "Unrecognized Fortran compiler. Please use ifort, gfortran, NAG, PGI, or XL.")
 endif()
 
+if (WIN32)
+  add_compile_definitions(_WIN32)
+endif()
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(build_submodule)
